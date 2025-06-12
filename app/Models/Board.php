@@ -11,7 +11,11 @@ class Board extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'user_id'];
+    protected $fillable = ['name', 'is_active', 'user_id'];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
     public function user()
     {
