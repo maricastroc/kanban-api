@@ -21,6 +21,9 @@ class StoreTaskRequest extends FormRequest
             'status' => 'required|string|max:255',
             'column_id' => 'required|exists:columns,id',
             'due_date' => 'nullable|date',
+            'subtasks' => 'sometimes|array',
+            'subtasks.*.title' => 'required|string|min:3|max:255',
+            'subtasks.*.is_completed' => 'sometimes|boolean',
         ];
     }
 }
