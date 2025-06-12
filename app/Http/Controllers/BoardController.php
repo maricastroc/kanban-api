@@ -66,7 +66,6 @@ class BoardController extends Controller
                 foreach ($request->input('columns') as $columnData) {
                     $board->columns()->create([
                         'name' => $columnData['name'],
-                        'order' => $columnData['order'] ?? 0,
                     ]);
                 }
             }
@@ -112,14 +111,11 @@ class BoardController extends Controller
                             ->where('id', $columnData['id'])
                             ->update([
                                 'name' => $columnData['name'],
-                                'order' => $columnData['order'] ?? 0,
                             ]);
                         $updatedColumnIds[] = $columnData['id'];
                     } else {
-                        // É uma nova coluna
                         $newColumn = $board->columns()->create([
                             'name' => $columnData['name'],
-                            'order' => $columnData['order'] ?? 0,
                         ]);
                         $updatedColumnIds[] = $newColumn->id;
                     }
