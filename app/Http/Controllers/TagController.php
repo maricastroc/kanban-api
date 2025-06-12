@@ -18,8 +18,16 @@ class TagController extends Controller
         try {
             $user = Auth::user();
 
+            if (! $user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized.',
+                ], 401);
+            }
+
+            // Filtra tags só do usuário logado
             $tags = TagResource::collection(
-                Tag::all()
+                Tag::where('user_id', $user->id)->get()
             );
 
             return response()->json([
