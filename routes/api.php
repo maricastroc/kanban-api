@@ -5,6 +5,7 @@ use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\SubtaskController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ReorderTaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,8 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
     Route::apiResource('tasks', TaskController::class)->scoped(['task' => 'uuid']);
 
     Route::apiResource('subtasks', SubtaskController::class)->only(['store', 'update', 'destroy'])->scoped(['subtask' => 'uuid']);
+
+    Route::put('/tasks/{task}/reorder', [ReorderTaskController::class, '__invoke']);
 
     Route::get('/tags', [TagController::class, 'index']);
 });
