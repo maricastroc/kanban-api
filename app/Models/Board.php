@@ -7,20 +7,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tag extends Model
+class Board extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'color', 'user_id'];
+    protected $fillable = ['name', 'user_id'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function tasks()
+    public function columns()
     {
-        return $this->belongsToMany(Task::class, 'task_tag')
-            ->withTimestamps();
+        return $this->hasMany(Column::class);
     }
 }

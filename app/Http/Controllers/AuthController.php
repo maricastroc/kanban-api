@@ -53,8 +53,6 @@ class AuthController extends Controller
                 'token' => $user->createToken('auth_token')->plainTextToken,
             ];
 
-        } catch (ValidationException $e) {
-            throw $e;
         } catch (\Exception $e) {
             return [
                 'error' => 'An unexpected error occurred. Please try again later.',
