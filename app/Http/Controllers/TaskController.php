@@ -46,21 +46,22 @@ class TaskController extends Controller
     {
         try {
             $user = Auth::user();
-
             $column = Column::with('board')->findOrFail($request->column_id);
 
             $this->authorize('create', [$column->board]);
 
-            $task = Task::create($request->validated());
+            $task = Task::createWithSubtasks($request->validated());
 
             return response()->json([
                 'success' => true,
                 'message' => 'Task created successfully!',
                 'data' => [
-                    'task' => new TaskResource($task),
+                    'task' => new TaskResource($task->load('subtasks')),
                 ],
             ]);
         } catch (Exception $e) {
+            \DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create task',
@@ -74,16 +75,18 @@ class TaskController extends Controller
         try {
             $this->authorize('update', $task);
 
-            $task->update($request->validated());
+            $task = $task->updateWithSubtasks($request->validated());
 
             return response()->json([
                 'success' => true,
                 'message' => 'Task updated successfully!',
                 'data' => [
-                    'task' => new TaskResource($task),
+                    'task' => new TaskResource($task->load('subtasks')),
                 ],
             ]);
         } catch (Exception $e) {
+            \DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update task',

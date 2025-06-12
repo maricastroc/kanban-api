@@ -29,6 +29,10 @@ class UpdateTaskRequest extends FormRequest
             'status' => 'required|string|max:255',
             'order' => 'nullable|integer',
             'due_date' => 'nullable|date',
+            'subtasks' => 'sometimes|array',
+            'subtasks.*.uuid' => 'sometimes',
+            'subtasks.*.name' => 'required|string|min:3|max:255',
+            'subtasks.*.is_completed' => 'sometimes|boolean',
         ];
     }
 }

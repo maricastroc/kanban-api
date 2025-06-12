@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Task extends Model
 {
@@ -31,6 +32,84 @@ class Task extends Model
                 $task->order = is_null($maxOrder) ? 1 : $maxOrder + 1;
             }
         });
+    }
+
+    public static function createWithSubtasks(array $data): Task
+    {
+        return DB::transaction(function () use ($data) {
+            $subtasks = $data['subtasks'] ?? [];
+            unset($data['subtasks']);
+
+            $task = self::create($data);
+
+            foreach ($subtasks as $subtaskData) {
+                $task->subtasks()->create([
+                    'name' => $subtaskData['name'],
+                    'is_completed' => $subtaskData['is_completed'] ?? false,
+                ]);
+            }
+
+            return $task;
+        });
+    }
+
+    public function updateWithSubtasks(array $data): Task
+    {
+        DB::beginTransaction();
+
+        try {
+            $this->update([
+                'name' => $data['name'] ?? $this->name,
+                'description' => $data['description'] ?? $this->description,
+                'order' => $data['order'] ?? $this->order,
+                'status' => $data['status'] ?? $this->status,
+                'due_date' => $data['due_date'] ?? $this->due_date,
+            ]);
+
+            if (isset($data['subtasks'])) {
+                $existingSubtaskIds = $this->subtasks()->pluck('id')->toArray();
+                $updatedSubtaskIds = [];
+
+                foreach ($data['subtasks'] as $subtaskData) {
+                    if (isset($subtaskData['uuid'])) {
+                        $subtask = $this->subtasks()->where('uuid', $subtaskData['uuid'])->first();
+
+                        if ($subtask) {
+                            $subtask->update([
+                                'name' => $subtaskData['name'],
+                            ]);
+                            $updatedSubtaskIds[] = $subtask->id;
+                        } else {
+                            $newSubtask = $this->subtasks()->create([
+                                'name' => $subtaskData['name'],
+                            ]);
+                            $updatedSubtaskIds[] = $newSubtask->id;
+                        }
+                    } else {
+                        $newSubtask = $this->subtasks()->create([
+                            'name' => $subtaskData['name'],
+                        ]);
+                        $updatedSubtaskIds[] = $newSubtask->id;
+                    }
+                }
+
+                $subtasksToDelete = array_diff($existingSubtaskIds, $updatedSubtaskIds);
+
+                if ($subtasksToDelete !== []) {
+                    $this->subtasks()->whereIn('id', $subtasksToDelete)->delete();
+                }
+            } else {
+                // Caso venha sem subtasks, exclui todas as existentes
+                $this->subtasks()->delete();
+            }
+
+            DB::commit();
+
+            return $this;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     public function column(): BelongsTo
