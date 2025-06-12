@@ -22,7 +22,7 @@ class TagController extends Controller
             $user = Auth::user();
 
             $tags = Tag::query()
-                ->whereHas('tasks.column.board', function ($query) use ($user) {
+                ->whereHas('tasks.column.board', function ($query) use ($user): void {
                     $query->where('user_id', $user->id);
                 })
                 ->get();

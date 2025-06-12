@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Route;
 Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', fn (Request $request) => $request->user());
 
-    Route::apiResource('boards', BoardController::class);
+    Route::apiResource('boards', BoardController::class)->scoped(['board' => 'uuid']);
 
-    Route::apiResource('columns', ColumnController::class);
+    Route::apiResource('columns', ColumnController::class)->scoped(['column' => 'uuid']);
 
-    Route::apiResource('tasks', TaskController::class);
+    Route::apiResource('tasks', TaskController::class)->scoped(['task' => 'uuid']);
 
-    Route::apiResource('subtasks', SubtaskController::class)->only(['store', 'update', 'destroy']);
+    Route::apiResource('subtasks', SubtaskController::class)->only(['store', 'update', 'destroy'])->scoped(['subtask' => 'uuid']);
 
     Route::get('/tags', [TagController::class, 'index']);
 });

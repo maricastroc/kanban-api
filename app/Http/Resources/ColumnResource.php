@@ -19,6 +19,7 @@ class ColumnResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'uuid' => $this->uuid,
             'name' => $this->name,
             'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
         ];

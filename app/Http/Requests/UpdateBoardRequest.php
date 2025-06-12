@@ -19,7 +19,7 @@ class UpdateBoardRequest extends FormRequest
             'name' => 'sometimes|string|min:3|max:255|unique:boards,name,'.$this->route('board')->id,
             'is_active' => 'sometimes|boolean',
             'columns' => 'sometimes|array',
-            'columns.*.id' => 'sometimes|exists:columns,id',
+            'columns.*.uuid' => 'sometimes',
             'columns.*.name' => 'required_with:columns|string|min:3|max:255',
             'columns.*.order' => 'sometimes|integer',
         ];

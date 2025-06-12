@@ -54,34 +54,16 @@ class BoardController extends Controller
         try {
             $user = Auth::user();
 
-            \DB::beginTransaction();
-
-            $board = Board::create([
-                'name' => $request->input('name'),
-                'user_id' => $user->id,
-                'is_active' => false,
-            ]);
-
-            if ($request->has('columns')) {
-                foreach ($request->input('columns') as $columnData) {
-                    $board->columns()->create([
-                        'name' => $columnData['name'],
-                    ]);
-                }
-            }
-
-            \DB::commit();
+            $board = Board::createWithColumns($request->only(['name', 'columns']), $user->id);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Board created successfully!',
                 'data' => [
-                    'board' => new BoardResource($board->load('columns')),
+                    'board' => new BoardResource($board->load('columns.tasks.subtasks')),
                 ],
             ], 201);
         } catch (Exception $e) {
-            \DB::rollBack();
-
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create board.',
@@ -93,54 +75,18 @@ class BoardController extends Controller
     public function update(UpdateBoardRequest $request, Board $board): JsonResponse
     {
         try {
-            $user = Auth::user();
-
             $this->authorize('update', $board);
 
-            \DB::beginTransaction();
-
-            $board->update($request->only(['name', 'is_active']));
-
-            if ($request->has('columns')) {
-                $existingColumnIds = $board->columns()->pluck('id')->toArray();
-                $updatedColumnIds = [];
-
-                foreach ($request->input('columns') as $columnData) {
-                    if (isset($columnData['id'])) {
-                        $board->columns()
-                            ->where('id', $columnData['id'])
-                            ->update([
-                                'name' => $columnData['name'],
-                            ]);
-                        $updatedColumnIds[] = $columnData['id'];
-                    } else {
-                        $newColumn = $board->columns()->create([
-                            'name' => $columnData['name'],
-                        ]);
-                        $updatedColumnIds[] = $newColumn->id;
-                    }
-                }
-
-                $columnsToDelete = array_diff($existingColumnIds, $updatedColumnIds);
-                if (! empty($columnsToDelete)) {
-                    $board->columns()->whereIn('id', $columnsToDelete)->delete();
-                }
-            } else {
-                $board->columns()->delete();
-            }
-
-            \DB::commit();
+            $board = $board->updateWithColumns($request->only(['name', 'is_active', 'columns']));
 
             return response()->json([
                 'success' => true,
                 'message' => 'Board updated successfully!',
                 'data' => [
-                    'board' => new BoardResource($board->load('columns')),
+                    'board' => new BoardResource($board->load('columns.tasks.subtasks')),
                 ],
             ]);
         } catch (Exception $e) {
-            \DB::rollBack();
-
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update board.',

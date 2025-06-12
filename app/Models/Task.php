@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,9 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
-    protected $fillable = ['name', 'description', 'order', 'column_id', 'status', 'due_date'];
+    protected $fillable = ['name', 'description', 'order', 'column_id', 'status', 'due_date', 'uuid'];
 
     protected $casts = [
         'due_date' => 'datetime',

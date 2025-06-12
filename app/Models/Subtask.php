@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Subtask extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
-    protected $fillable = ['name', 'order', 'is_completed', 'task_id'];
+    protected $fillable = ['name', 'order', 'is_completed', 'task_id', 'uuid'];
 
     protected $casts = [
         'is_completed' => 'boolean',
