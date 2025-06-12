@@ -9,6 +9,7 @@ use App\Http\Controllers\UserSyncController;
 Route::get('/', fn (): array => [config('app.name')]);
 
 Route::prefix('api')->name('api.')->group(function (): void {
-    Route::get('/tags', [TagController::class, 'index']);
+    Route::middleware('nextauth')->get('/tags', [TagController::class, 'index']);
+
     Route::post('/sync-user', UserSyncController::class);
 });
