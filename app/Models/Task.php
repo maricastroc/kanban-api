@@ -19,6 +19,19 @@ class Task extends Model
         'due_date' => 'datetime',
     ];
 
+    #[\Override]
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (Task $task): void {
+            if ($task->column_id) {
+                $maxOrder = Task::where('column_id', $task->column_id)->max('order');
+                $task->order = is_null($maxOrder) ? 1 : $maxOrder + 1;
+            }
+        });
+    }
+
     public function column(): BelongsTo
     {
         return $this->belongsTo(Column::class);
@@ -32,6 +45,8 @@ class Task extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'task_tag')
-            ->withTimestamps();
+            ->using(\App\Models\TaskTag::class)
+            ->withPivot('created_at')
+            ->as('pivot');
     }
 }

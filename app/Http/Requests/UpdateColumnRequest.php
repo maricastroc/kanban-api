@@ -30,7 +30,7 @@ class UpdateColumnRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique('columns')
-                    ->where(fn($query) => $query->where('board_id', $this->column->board_id))
+                    ->where(fn ($query) => $query->where('board_id', $this->column->board_id))
                     ->ignore($this->column->id),
             ],
         ];

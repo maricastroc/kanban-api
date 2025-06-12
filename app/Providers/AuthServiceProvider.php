@@ -4,8 +4,11 @@ namespace App\Providers;
 
 use App\Models\Board;
 use App\Models\Column;
+use App\Models\Task;
 use App\Policies\BoardPolicy;
 use App\Policies\ColumnPolicy;
+use App\Policies\SubtaskPolicy;
+use App\Policies\TaskPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -18,6 +21,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Board::class => BoardPolicy::class,
         Column::class => ColumnPolicy::class,
+        Task::class => TaskPolicy::class,
+        Subtask::class => SubtaskPolicy::class,
     ];
 
     /**

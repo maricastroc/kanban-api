@@ -7,21 +7,24 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
+use App\Models\Column;
 use App\Models\Task;
 use Exception;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request): JsonResponse
     {
         try {
             $user = Auth::user();
-            if (! $user) {
-                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 401);
-            }
+
+            $this->authorize('viewAny', Task::class);
 
             $tasks = Task::with(['subtasks', 'tags'])
                 ->whereHas('column.board', function ($query) use ($user): void {
@@ -39,28 +42,14 @@ class TaskController extends Controller
         }
     }
 
-    public function show(int $id): JsonResponse
-    {
-        try {
-            $task = Task::with(['subtasks', 'tags'])->findOrFail($id);
-
-            return response()->json(['data' => new TaskResource($task)], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Task not found',
-                'error' => $e->getMessage(),
-            ], 404);
-        }
-    }
-
     public function store(StoreTaskRequest $request): JsonResponse
     {
         try {
             $user = Auth::user();
-            if (! $user) {
-                return response()->json(['success' => false, 'message' => 'Unauthorized.'], 401);
-            }
+
+            $column = Column::with('board')->findOrFail($request->column_id);
+
+            $this->authorize('create', [$column->board]);
 
             $task = Task::create($request->validated());
 
@@ -80,10 +69,10 @@ class TaskController extends Controller
         }
     }
 
-    public function update(UpdateTaskRequest $request, int $id): JsonResponse
+    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
         try {
-            $task = Task::findOrFail($id);
+            $this->authorize('update', $task);
 
             $task->update($request->validated());
 
@@ -103,14 +92,16 @@ class TaskController extends Controller
         }
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(Task $task): JsonResponse
     {
         try {
-            $task = Task::findOrFail($id);
+            $user = Auth::user();
+
+            $this->authorize('delete', $task);
 
             $task->delete();
 
-            return response()->json(['message' => 'Task deleted successfully'], 200);
+            return response()->json(['message' => 'Task deleted successfully!'], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
