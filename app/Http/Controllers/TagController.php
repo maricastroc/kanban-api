@@ -9,14 +9,17 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Tag;
 
 class TagController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
         try {
-            $tags = Tag::all();
+            $user = Auth::user();
+
+            $tags = TagResource::collection(
+                $user->tags()->get()
+            );
 
             return response()->json([
                 'data' => [
