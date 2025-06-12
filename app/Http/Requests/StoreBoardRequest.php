@@ -25,6 +25,9 @@ class StoreBoardRequest extends FormRequest
     {
         return [
             'name' => 'required|string|unique:boards,name|min:3|max:255',
+            'columns' => 'sometimes|array',
+            'columns.*.name' => 'required|string|min:3|max:255',
+            'columns.*.order' => 'sometimes|integer',
         ];
     }
 }
