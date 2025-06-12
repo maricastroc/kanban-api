@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Http\Requests;
 
@@ -24,8 +24,8 @@ class UserSyncRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'     => 'required|string|min:3',
-            'email'    => 'required|email|unique:users,email',
+            'name' => 'required|string|min:3',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
         ];
     }

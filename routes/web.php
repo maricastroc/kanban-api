@@ -1,15 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TagController;
-use App\Http\Controllers\UserSyncController;
 
 Route::get('/', fn (): array => [config('app.name')]);
 
-Route::prefix('api')->name('api.')->group(function (): void {
-    Route::middleware('nextauth')->get('/tags', [TagController::class, 'index']);
+Route::middleware('guest')->group(function (): void {
+    Route::post('/api/register', [AuthController::class, 'register']);
 
-    Route::post('/sync-user', UserSyncController::class);
+    Route::post('/api/login', [AuthController::class, 'login']);
 });

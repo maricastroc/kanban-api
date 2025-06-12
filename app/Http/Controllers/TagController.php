@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TagResource;
+use App\Models\Tag;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class TagController extends Controller
             $user = Auth::user();
 
             $tags = TagResource::collection(
-                $user->tags()->get()
+                Tag::all()
             );
 
             return response()->json([
@@ -30,7 +31,7 @@ class TagController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'An unexpected error occurred!',
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

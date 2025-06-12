@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Http\Resources;
 
@@ -18,7 +18,7 @@ class TagResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name'  => $this->name,
+            'name' => $this->name,
             'color' => $this->color,
         ];
     }

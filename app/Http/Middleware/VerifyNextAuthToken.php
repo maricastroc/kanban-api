@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class VerifyNextAuthToken
 {
@@ -15,7 +15,7 @@ class VerifyNextAuthToken
     {
         $authHeader = $request->header('Authorization');
 
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+        if (! $authHeader || ! str_starts_with($authHeader, 'Bearer ')) {
             return response()->json(['error' => 'Token not provided'], 401);
         }
 
@@ -26,14 +26,14 @@ class VerifyNextAuthToken
 
             $user = User::where('email', $decoded->email)->first();
 
-            if (!$user) {
+            if (! $user) {
                 return response()->json(['error' => 'User not found'], 401);
             }
 
             Auth::login($user);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Invalid token: ' . $e->getMessage()], 401);
+            return response()->json(['error' => 'Invalid token: '.$e->getMessage()], 401);
         }
 
         return $next($request);
