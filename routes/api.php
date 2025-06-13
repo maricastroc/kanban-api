@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', fn (Request $request) => $request->user());
 
+    Route::get('/boards/active', [BoardController::class, 'active']);
+
+    Route::patch('/boards/{board}/activate', [BoardController::class, 'setActive']);
+
     Route::apiResource('boards', BoardController::class)->scoped(['board' => 'uuid']);
 
     Route::apiResource('columns', ColumnController::class)->scoped(['column' => 'uuid']);

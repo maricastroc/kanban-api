@@ -23,13 +23,11 @@ class Board extends Model
 
     public static function createWithColumns(array $data, $userId): Board
     {
-        DB::beginTransaction();
-
-        try {
+        return DB::transaction(function () use ($data, $userId) {
             $board = self::create([
                 'name' => $data['name'],
                 'user_id' => $userId,
-                'is_active' => false,
+                'is_active' => true,
             ]);
 
             if (! empty($data['columns'])) {
@@ -40,68 +38,79 @@ class Board extends Model
                 }
             }
 
-            DB::commit();
+            $board->deactivateOtherBoards();
 
             return $board;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        });
     }
 
     public function updateWithColumns(array $data): Board
     {
-        DB::beginTransaction();
-
-        try {
+        return DB::transaction(function () use ($data): static {
             $this->update([
                 'name' => $data['name'] ?? $this->name,
-                'is_active' => $data['is_active'] ?? $this->is_active,
+                'is_active' => true, // Sempre ativa ao editar
             ]);
 
             if (isset($data['columns'])) {
-                $existingColumnIds = $this->columns()->pluck('id')->toArray();
-                $updatedColumnIds = [];
-
-                foreach ($data['columns'] as $columnData) {
-                    if (isset($columnData['uuid'])) {
-                        $column = $this->columns()->where('uuid', $columnData['uuid'])->first();
-
-                        if ($column) {
-                            $column->update([
-                                'name' => $columnData['name'],
-                            ]);
-                            $updatedColumnIds[] = $column->id;
-                        } else {
-                            $newColumn = $this->columns()->create([
-                                'name' => $columnData['name'],
-                            ]);
-                            $updatedColumnIds[] = $newColumn->id;
-                        }
-                    } else {
-                        $newColumn = $this->columns()->create([
-                            'name' => $columnData['name'],
-                        ]);
-                        $updatedColumnIds[] = $newColumn->id;
-                    }
-                }
-
-                $columnsToDelete = array_diff($existingColumnIds, $updatedColumnIds);
-
-                if ($columnsToDelete !== []) {
-                    $this->columns()->whereIn('id', $columnsToDelete)->delete();
-                }
+                $this->syncColumns($data['columns']);
             } else {
                 $this->columns()->delete();
             }
 
-            DB::commit();
+            $this->deactivateOtherBoards();
 
             return $this;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
+        });
+    }
+
+    protected function syncColumns(array $columnsData): void
+    {
+        $existingColumnIds = $this->columns()->pluck('id')->toArray();
+        $updatedColumnIds = [];
+
+        foreach ($columnsData as $columnData) {
+            if (isset($columnData['uuid'])) {
+                $column = $this->columns()->where('uuid', $columnData['uuid'])->first();
+
+                if ($column) {
+                    $column->update(['name' => $columnData['name']]);
+                    $updatedColumnIds[] = $column->id;
+                } else {
+                    $newColumn = $this->columns()->create(['name' => $columnData['name']]);
+                    $updatedColumnIds[] = $newColumn->id;
+                }
+            } else {
+                $newColumn = $this->columns()->create(['name' => $columnData['name']]);
+                $updatedColumnIds[] = $newColumn->id;
+            }
         }
+
+        $columnsToDelete = array_diff($existingColumnIds, $updatedColumnIds);
+        if ($columnsToDelete !== []) {
+            $this->columns()->whereIn('id', $columnsToDelete)->delete();
+        }
+    }
+
+    public static function getActiveBoard(int $userId): ?self
+    {
+        return self::where('user_id', $userId)
+            ->where('is_active', true)
+            ->with(['columns.tasks.subtasks', 'user'])
+            ->first();
+    }
+
+    public function activate(): void
+    {
+        $this->update(['is_active' => true]);
+        $this->deactivateOtherBoards();
+    }
+
+    public function deactivateOtherBoards(): void
+    {
+        self::where('user_id', $this->user_id)
+            ->where('id', '!=', $this->id)
+            ->update(['is_active' => false]);
     }
 
     public function user(): BelongsTo

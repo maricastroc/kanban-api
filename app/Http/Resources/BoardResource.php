@@ -21,6 +21,7 @@ class BoardResource extends JsonResource
             'id' => $this->id,
             'uuid' => $this->uuid,
             'name' => $this->name,
+            'is_active' => $this->is_active,
             'columns' => ColumnResource::collection($this->whenLoaded('columns')),
         ];
     }

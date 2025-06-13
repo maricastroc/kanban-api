@@ -26,9 +26,10 @@ class BoardController extends Controller
             $this->authorize('viewAny', Board::class);
 
             $boards = Board::where('user_id', $user->id)
-                ->with([
-                    'columns.tasks.subtasks',
-                ])
+                ->when(
+                    $request->string('with')->contains('columns'),
+                    fn ($query) => $query->with('columns.tasks.subtasks')
+                )
                 ->when(
                     $request->string('with')->contains('user'),
                     fn ($query) => $query->with('user')
@@ -38,6 +39,32 @@ class BoardController extends Controller
             return response()->json([
                 'data' => [
                     'boards' => BoardResource::collection($boards),
+                ],
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An unexpected error occurred!',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function show(Board $board): JsonResponse
+    {
+        try {
+            $this->authorize('view', $board);
+
+            $board->activate();
+
+            $board->load([
+                'columns.tasks.subtasks',
+                'user',
+            ]);
+
+            return response()->json([
+                'data' => [
+                    'board' => new BoardResource($board),
                 ],
             ], 200);
         } catch (Exception $e) {
@@ -119,6 +146,59 @@ class BoardController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete board.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function active(): JsonResponse
+    {
+        try {
+            $board = Board::getActiveBoard(Auth::id());
+
+            if (!$board instanceof \App\Models\Board) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No active boards found.',
+                ], 404);
+            }
+
+            return response()->json([
+                'data' => [
+                    'board' => new BoardResource($board),
+                ],
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error searching for active board.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function setActive(Board $board): JsonResponse
+    {
+        try {
+            $this->authorize('update', $board);
+
+            $board->activate();
+
+            $board->load([
+                'columns.tasks.subtasks',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Board set as active.',
+                'data' => [
+                    'board' => new BoardResource($board),
+                ],
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to set active board.',
                 'error' => $e->getMessage(),
             ], 500);
         }
