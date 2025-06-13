@@ -7,9 +7,7 @@ use Illuminate\Contracts\Validation\Rule;
 
 class UniqueTaskNameInColumn implements Rule
 {
-    public function __construct(protected \App\Models\Task $task)
-    {
-    }
+    public function __construct(protected \App\Models\Task $task) {}
 
     public function passes($attribute, $value): bool
     {

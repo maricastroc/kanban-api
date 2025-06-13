@@ -42,21 +42,18 @@ class MoveTaskController extends Controller
         try {
             DB::beginTransaction();
 
-            // 1. Ajustar ordem da coluna antiga
             Task::where('column_id', $currentColumnId)
                 ->where('order', '>', $currentOrder)
                 ->decrement('order');
 
-            // 2. Ajustar ordem na nova coluna
             Task::where('column_id', $newColumnId)
                 ->where('order', '>=', $newOrder)
                 ->increment('order');
 
-            // 3. Mover a task para nova coluna e nova ordem
             $task->update([
                 'column_id' => $newColumnId,
                 'order' => $newOrder,
-                'status' => Column::findOrFail($newColumnId)->name, // caso você use o status = nome da coluna
+                'status' => Column::findOrFail($newColumnId)->name,
             ]);
 
             DB::commit();

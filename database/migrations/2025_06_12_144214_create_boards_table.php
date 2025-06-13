@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('boards', function (Blueprint $table): void {
             $table->id();
             $table->string('is_active')->default(false);
-            $table->string('uuid')->unique();
-            $table->string('name')->unique();
+            $table->string('uuid');
+            $table->string('name');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

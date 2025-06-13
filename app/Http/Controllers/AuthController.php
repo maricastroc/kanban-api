@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -36,7 +39,7 @@ class AuthController extends Controller
         }
     }
 
-    public function login(LoginRequest $r): array
+    public function login(LoginRequest $r): JsonResponse
     {
         try {
             $user = User::firstWhere('email', $r->string('email'));
@@ -49,15 +52,36 @@ class AuthController extends Controller
 
             $user->tokens()->delete();
 
-            return [
+            return response()->json([
                 'token' => $user->createToken('auth_token')->plainTextToken,
-            ];
+            ], 200);
 
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
-            return [
+            return response()->json([
                 'error' => 'An unexpected error occurred. Please try again later.',
                 'details' => $e->getMessage(),
-            ];
+            ], 500);
         }
+    }
+
+    public function logout()
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            $user->currentAccessToken()->delete();
+
+            return response()->json([
+                'message' => 'Logout successful!',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'User not authenticated',
+        ], 401);
     }
 }

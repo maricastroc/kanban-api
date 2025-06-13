@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('order')->default(0);
             $table->string('name');
-            $table->string('uuid')->unique();
+            $table->string('uuid');
             $table->string('status');
             $table->string('description')->nullable();
             $table->dateTime('due_date')->nullable();

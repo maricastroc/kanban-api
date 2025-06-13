@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\MoveTaskController;
@@ -23,11 +24,15 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
 
     Route::apiResource('tasks', TaskController::class)->scoped(['task' => 'uuid']);
 
+    Route::apiResource('tags', TagController::class)->scoped(['tag' => 'uuid']);
+
     Route::apiResource('subtasks', SubtaskController::class)->only(['store', 'update', 'destroy'])->scoped(['subtask' => 'uuid']);
 
     Route::put('/tasks/{task}/reorder', [ReorderTaskController::class, '__invoke']);
 
     Route::put('/tasks/{task}/move', [MoveTaskController::class, '__invoke']);
 
-    Route::get('/tags', [TagController::class, 'index']);
+    Route::apiResource('/tags', TagController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    Route::get('/logout', [AuthController::class, 'logout']);
 });

@@ -21,16 +21,13 @@ class TagController extends Controller
         try {
             $user = Auth::user();
 
-            $tags = Tag::query()
-                ->whereHas('tasks.column.board', function ($query) use ($user): void {
-                    $query->where('user_id', $user->id);
-                })
-                ->get();
+            $tags = $user->tags()->get();
 
             return response()->json([
-                'success' => true,
-                'data' => TagResource::collection($tags),
-            ]);
+                'data' => [
+                    'tags' => TagResource::collection($tags),
+                ],
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -45,11 +42,14 @@ class TagController extends Controller
         try {
             $user = Auth::user();
 
-            $tag = Tag::create($request->validated());
+            $tag = Tag::create([
+                ...$request->validated(),
+                'user_id' => $user->id,
+            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tag created successfully',
+                'message' => 'Tag created successfully!',
                 'data' => new TagResource($tag),
             ], 201);
         } catch (Exception $e) {
@@ -99,7 +99,7 @@ class TagController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tag detached from task successfully',
+                'message' => 'Tag detached from task successfully!',
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -123,7 +123,7 @@ class TagController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tag updated successfully',
+                'message' => 'Tag updated successfully!',
                 'data' => new TagResource($tag),
             ]);
         } catch (Exception $e) {
@@ -151,7 +151,7 @@ class TagController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tag deleted successfully',
+                'message' => 'Tag deleted successfully!',
             ]);
         } catch (Exception $e) {
             return response()->json([

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('order')->default(0);
             $table->string('name');
-            $table->string('uuid')->unique();
+            $table->string('uuid');
             $table->boolean('is_completed')->default(false);
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
