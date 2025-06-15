@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardController;
+use App\Http\Controllers\BulkReorderSubtaskController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\MoveTaskController;
 use App\Http\Controllers\ReorderTaskController;
@@ -24,11 +25,11 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
 
     Route::apiResource('tasks', TaskController::class)->scoped(['task' => 'uuid']);
 
-    Route::apiResource('tags', TagController::class)->scoped(['tag' => 'uuid']);
+    Route::apiResource('tags', TagController::class);
 
     Route::patch('/subtasks/{subtask}/toggle-completion', [SubtaskController::class, 'toggleCompletion']);
 
-    Route::put('/subtasks/reorder', [SubtaskController::class, 'bulkReorder']);
+    Route::patch('/subtasks/bulk-reorder', BulkReorderSubtaskController::class);
 
     Route::apiResource('subtasks', SubtaskController::class)->only(['store', 'update', 'destroy']);
 
