@@ -90,56 +90,42 @@ class SubtaskController extends Controller
             ], 500);
         }
     }
+public function bulkReorder(Request $request): JsonResponse
+{
+    $validated = $request->validate([
+        'taskId' => ['required', 'integer', 'exists:tasks,id'],
+        'subtasks' => ['required', 'array'],
+        'subtasks.*.id' => ['required', 'integer', 'exists:subtasks,id'],
+        'subtasks.*.order' => ['required', 'integer', 'min:1'],
+    ]);
 
-    public function reorder(Request $request, Subtask $subtask): JsonResponse
-    {
-        $this->authorize('update', $subtask);
+    try {
+        DB::beginTransaction();
 
-        $validated = $request->validate([
-            'new_order' => ['required', 'integer', 'min:0'],
+        foreach ($validated['subtasks'] as $subtaskData) {
+            $subtask = Subtask::where('task_id', $validated['taskId'])
+                ->findOrFail($subtaskData['id']);
+
+            $this->authorize('update', $subtask);
+
+            $subtask->order = $subtaskData['order'];
+            $subtask->save();
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Subtasks reordered successfully.',
         ]);
+    } catch (Exception $e) {
+        DB::rollBack();
 
-        $newOrder = (int) $validated['new_order'];
-        $currentOrder = $subtask->order;
-        $taskId = $subtask->task_id;
-
-        if ($newOrder === $currentOrder) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Subtask already in correct position.',
-            ]);
-        }
-
-        try {
-            DB::beginTransaction();
-
-            if ($newOrder < $currentOrder) {
-                Subtask::where('task_id', $taskId)
-                    ->whereBetween('order', [$newOrder, $currentOrder - 1])
-                    ->increment('order');
-            } else {
-                Subtask::where('task_id', $taskId)
-                    ->whereBetween('order', [$currentOrder + 1, $newOrder])
-                    ->decrement('order');
-            }
-
-            $subtask->update(['order' => $newOrder]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Subask reordered successfully!',
-                'data' => $subtask,
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to reorder subtask.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to reorder subtasks.',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
 }
