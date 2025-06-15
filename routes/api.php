@@ -28,7 +28,7 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
 
     Route::put('/subtasks/reorder', [SubtaskController::class, 'bulkReorder']);
 
-    Route::apiResource('subtasks', SubtaskController::class)->only(['store', 'update', 'destroy'])->scoped(['subtask' => 'uuid']);
+    Route::apiResource('subtasks', SubtaskController::class)->only(['store', 'update', 'destroy']);
 
     Route::put('/tasks/{task}/reorder', [ReorderTaskController::class, '__invoke']);
 
