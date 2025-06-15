@@ -88,4 +88,56 @@ class SubtaskController extends Controller
             ], 500);
         }
     }
+
+    public function reorder(Request $request, Subtask $subtask): JsonResponse
+    {
+        $this->authorize('update', $subtask);
+
+        $validated = $request->validate([
+            'new_order' => ['required', 'integer', 'min:0'],
+        ]);
+
+        $newOrder = (int) $validated['new_order'];
+        $currentOrder = $subtask->order;
+        $taskId = $subtask->task_id;
+
+        if ($newOrder === $currentOrder) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Subtask already in correct position.',
+            ]);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            if ($newOrder < $currentOrder) {
+                Task::where('task_id', $taskId)
+                    ->whereBetween('order', [$newOrder, $currentOrder - 1])
+                    ->increment('order');
+            } else {
+                Task::where('task_id', $taskId)
+                    ->whereBetween('order', [$currentOrder + 1, $newOrder])
+                    ->decrement('order');
+            }
+
+            $subtask->update(['order' => $newOrder]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subask reordered successfully!',
+                'data' => $subtask,
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to reorder subtask.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

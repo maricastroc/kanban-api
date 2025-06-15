@@ -85,7 +85,7 @@ class Board extends Model
 
         $columnsToDelete = array_diff($existingColumnIds, $updatedColumnIds);
 
-        if (! empty($columnsToDelete)) {
+        if ($columnsToDelete !== []) {
             $this->columns()->whereIn('id', $columnsToDelete)->delete();
         }
     }
