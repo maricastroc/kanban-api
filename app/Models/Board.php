@@ -94,7 +94,7 @@ class Board extends Model
     {
         return self::where('user_id', $userId)
             ->where('is_active', true)
-            ->with(['columns.tasks.subtasks', 'user'])
+            ->with(['columns.tasks.subtasks', 'columns.tasks.tags', 'user'])
             ->first();
     }
 
