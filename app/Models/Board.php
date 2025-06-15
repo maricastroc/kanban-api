@@ -45,68 +45,50 @@ class Board extends Model
     }
 
     public function updateWithColumns(array $data): Board
-{
-    return DB::transaction(function () use ($data): static {
-        $this->update([
-            'name' => $data['name'] ?? $this->name,
-            'is_active' => true,
-        ]);
+    {
+        return DB::transaction(function () use ($data): static {
+            $this->update([
+                'name' => $data['name'] ?? $this->name,
+                'is_active' => true,
+            ]);
 
-        if (isset($data['columns'])) {
-            $this->syncColumns($data['columns']);
-        } else {
-            // Modificado para deletar tasks primeiro
-            $this->columns()->each(function ($column) {
-                $column->tasks()->delete();
-                $column->delete();
-            });
-        }
-
-        $this->deactivateOtherBoards();
-
-        return $this;
-    });
-}
-
-protected function syncColumns(array $columnsData): void
-{
-    // Obter todas as colunas atuais com seus UUIDs
-    $currentColumns = $this->columns()->get();
-    
-    // Processar colunas do payload
-    $updatedUuids = [];
-    
-    foreach ($columnsData as $columnData) {
-        if (isset($columnData['uuid'])) {
-            $column = $currentColumns->where('uuid', $columnData['uuid'])->first();
-            
-            if ($column) {
-                $column->update(['name' => $columnData['name']]);
-                $updatedUuids[] = $column->uuid;
+            if (isset($data['columns'])) {
+                $this->syncColumns($data['columns']);
             } else {
-                $newColumn = $this->columns()->create([
-                    'name' => $columnData['name'],
-                    'uuid' => $columnData['uuid']
-                ]);
-                $updatedUuids[] = $newColumn->uuid;
+                $this->columns()->delete();
             }
-        } else {
-            $newColumn = $this->columns()->create(['name' => $columnData['name']]);
-            $updatedUuids[] = $newColumn->uuid;
+
+            $this->deactivateOtherBoards();
+
+            return $this;
+        });
+    }
+
+    protected function syncColumns(array $columnsData): void
+    {
+        $existingColumnIds = $this->columns()->pluck('id')->toArray();
+        $updatedColumnIds = [];
+
+        foreach ($columnsData as $columnData) {
+            if (isset($columnData['id'])) {
+                $column = $this->columns()->find($columnData['id']);
+
+                if ($column) {
+                    $column->update(['name' => $columnData['name']]);
+                    $updatedColumnIds[] = $column->id;
+                }
+            } else {
+                $newColumn = $this->columns()->create(['name' => $columnData['name']]);
+                $updatedColumnIds[] = $newColumn->id;
+            }
+        }
+
+        $columnsToDelete = array_diff($existingColumnIds, $updatedColumnIds);
+
+        if (! empty($columnsToDelete)) {
+            $this->columns()->whereIn('id', $columnsToDelete)->delete();
         }
     }
-    
-    // Identificar colunas para deletar
-    $columnsToDelete = $currentColumns->whereNotIn('uuid', $updatedUuids);
-    
-    // Deletar de forma segura
-    foreach ($columnsToDelete as $column) {
-        // Primeiro deletar as tasks manualmente
-        $column->tasks()->delete();
-        // Depois deletar a coluna
-        $column->delete();
-    }
-}
 
     public static function getActiveBoard(int $userId): ?self
     {
