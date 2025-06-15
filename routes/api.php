@@ -25,6 +25,10 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
 
     Route::apiResource('tasks', TaskController::class)->scoped(['task' => 'uuid']);
 
+    Route::post('/tasks/{task}/tags/{tag}', [TagController::class, 'attachToTask'])->name('tasks.tags.attach');
+
+    Route::delete('/tasks/{task}/tags/{tag}', [TagController::class, 'detachFromTask'])->name('tasks.tags.detach');
+
     Route::apiResource('tags', TagController::class);
 
     Route::patch('/subtasks/{subtask}/toggle-completion', [SubtaskController::class, 'toggleCompletion']);
