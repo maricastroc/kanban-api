@@ -13,13 +13,18 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TagController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request): JsonResponse
     {
         try {
             $user = Auth::user();
+
+            $this->authorize('viewAny', Tag::class);
 
             $tags = $user->tags()->get();
 
@@ -115,9 +120,7 @@ class TagController extends Controller
         try {
             $user = Auth::user();
 
-            if (! $tag->tasks()->whereHas('column.board', fn ($q) => $q->where('user_id', $user->id))->exists()) {
-                throw new \Exception('Unauthorized');
-            }
+            $this->authorize('update', $tag);
 
             $tag->update($request->validated());
 
@@ -143,9 +146,7 @@ class TagController extends Controller
         try {
             $user = Auth::user();
 
-            if (! $tag->tasks()->whereHas('column.board', fn ($q) => $q->where('user_id', $user->id))->exists()) {
-                throw new \Exception('Unauthorized');
-            }
+            $this->authorize('delete', $tag);
 
             $tag->delete();
 
