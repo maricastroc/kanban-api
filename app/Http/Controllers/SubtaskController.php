@@ -114,11 +114,11 @@ class SubtaskController extends Controller
             DB::beginTransaction();
 
             if ($newOrder < $currentOrder) {
-                Task::where('task_id', $taskId)
+                Subtask::where('task_id', $taskId)
                     ->whereBetween('order', [$newOrder, $currentOrder - 1])
                     ->increment('order');
             } else {
-                Task::where('task_id', $taskId)
+                Subtask::where('task_id', $taskId)
                     ->whereBetween('order', [$currentOrder + 1, $newOrder])
                     ->decrement('order');
             }
