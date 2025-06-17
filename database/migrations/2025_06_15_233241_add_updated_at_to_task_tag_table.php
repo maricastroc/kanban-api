@@ -6,16 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::table('task_tag', function (Blueprint $table) {
+        Schema::table('task_tag', function (Blueprint $table): void {
             $table->timestamp('updated_at')->nullable();
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        Schema::table('task_tag', function (Blueprint $table) {
+        Schema::table('task_tag', function (Blueprint $table): void {
             $table->dropColumn('updated_at');
         });
     }

@@ -21,6 +21,25 @@ class Board extends Model
         'is_active' => 'boolean',
     ];
 
+    #[\Override]
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::deleting(function (Board $board): void {
+            $previousBoard = self::where('user_id', $board->user_id)
+                ->where('id', '!=', $board->id)
+                ->where('created_at', '<', $board->created_at)
+                ->orderByDesc('created_at')
+                ->first();
+
+            if ($previousBoard) {
+                $previousBoard->update(['is_active' => true]);
+                $previousBoard->deactivateOtherBoards();
+            }
+        });
+    }
+
     public static function createWithColumns(array $data, $userId): Board
     {
         return DB::transaction(function () use ($data, $userId) {

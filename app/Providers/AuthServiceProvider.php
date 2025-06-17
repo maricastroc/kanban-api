@@ -8,8 +8,8 @@ use App\Models\Task;
 use App\Policies\BoardPolicy;
 use App\Policies\ColumnPolicy;
 use App\Policies\SubtaskPolicy;
-use App\Policies\TaskPolicy;
 use App\Policies\TagPolicy;
+use App\Policies\TaskPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider

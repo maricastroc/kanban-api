@@ -1,9 +1,8 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
 use App\Models\Subtask;
-use App\Models\Task;
 use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
