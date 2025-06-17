@@ -24,6 +24,8 @@ class StoreTaskRequest extends FormRequest
             'subtasks' => 'sometimes|array',
             'subtasks.*.name' => 'required|string|min:3|max:255',
             'subtasks.*.is_completed' => 'sometimes|boolean',
+            'tags' => 'sometimes|array',
+            'tags.*' => 'integer|exists:tags,id',
         ];
     }
 }

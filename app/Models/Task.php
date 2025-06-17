@@ -38,7 +38,9 @@ class Task extends Model
     {
         return DB::transaction(function () use ($data) {
             $subtasks = $data['subtasks'] ?? [];
-            unset($data['subtasks']);
+            $tags = $data['tags'] ?? [];
+
+            unset($data['subtasks'], $data['tags']);
 
             $task = self::create($data);
 
@@ -47,6 +49,10 @@ class Task extends Model
                     'name' => $subtaskData['name'],
                     'is_completed' => $subtaskData['is_completed'] ?? false,
                 ]);
+            }
+
+            if (!empty($tags)) {
+                $task->tags()->sync($tags);
             }
 
             return $task;
@@ -73,7 +79,6 @@ class Task extends Model
                 foreach ($data['subtasks'] as $subtaskData) {
                     if (isset($subtaskData['uuid'])) {
                         $subtask = $this->subtasks()->where('uuid', $subtaskData['uuid'])->first();
-
                         if ($subtask) {
                             $subtask->update([
                                 'name' => $subtaskData['name'],
@@ -94,19 +99,21 @@ class Task extends Model
                 }
 
                 $subtasksToDelete = array_diff($existingSubtaskIds, $updatedSubtaskIds);
-
                 if ($subtasksToDelete !== []) {
                     $this->subtasks()->whereIn('id', $subtasksToDelete)->delete();
                 }
             } else {
-                // Caso venha sem subtasks, exclui todas as existentes
                 $this->subtasks()->delete();
             }
 
-            DB::commit();
+            // Atualizar tags
+            if (isset($data['tags']) && is_array($data['tags'])) {
+                $this->tags()->sync($data['tags']);
+            }
 
+            DB::commit();
             return $this;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }

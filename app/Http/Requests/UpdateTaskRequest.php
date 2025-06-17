@@ -50,6 +50,8 @@ class UpdateTaskRequest extends FormRequest
                 },
             ],
             'subtasks.*.is_completed' => 'sometimes|boolean',
+            'tags' => 'sometimes|array',
+            'tags.*' => 'integer|exists:tags,id',
         ];
     }
 }
