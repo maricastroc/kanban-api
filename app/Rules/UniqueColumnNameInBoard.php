@@ -8,9 +8,7 @@ use Illuminate\Contracts\Validation\Rule;
 
 class UniqueColumnNameInBoard implements Rule
 {
-    public function __construct(protected array $columns, protected int|string $currentIndex)
-    {
-    }
+    public function __construct(protected array $columns, protected int|string $currentIndex) {}
 
     public function passes($attribute, $value): bool
     {

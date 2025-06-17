@@ -4,29 +4,37 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Rules\UniqueColumnNameInBoard;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBoardRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $columns = $this->input('columns', []);
+
         return [
             'name' => 'required|string|unique:boards,name|min:3|max:255',
             'columns' => 'sometimes|array',
-            'columns.*.name' => 'required|string|min:3|max:255',
+            'columns.*.name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                function ($attribute, $value, $fail) use ($columns): void {
+                    $index = explode('.', $attribute)[1];
+                    $rule = new UniqueColumnNameInBoard($columns, $index);
+
+                    if (! $rule->passes($attribute, $value)) {
+                        $fail(str_replace(':value', $value, $rule->message()));
+                    }
+                },
+            ],
             'columns.*.order' => 'sometimes|integer',
         ];
     }
