@@ -19,11 +19,11 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
 
     Route::patch('/boards/{board}/activate', [BoardController::class, 'setActive']);
 
-    Route::apiResource('boards', BoardController::class)->scoped(['board' => 'uuid']);
+    Route::apiResource('boards', BoardController::class);
 
-    Route::apiResource('columns', ColumnController::class)->scoped(['column' => 'uuid']);
+    Route::apiResource('columns', ColumnController::class);
 
-    Route::apiResource('tasks', TaskController::class)->scoped(['task' => 'uuid']);
+    Route::apiResource('tasks', TaskController::class);
 
     Route::post('/tasks/{task}/tags/{tag}', [TagController::class, 'attachToTask'])->name('tasks.tags.attach');
 
