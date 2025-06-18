@@ -33,7 +33,7 @@ class ColumnFactory extends Factory
 
     public function forBoard(Board $board): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'board_id' => $board->id,
         ]);
     }

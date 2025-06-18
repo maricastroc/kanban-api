@@ -22,21 +22,21 @@ class SubtaskFactory extends Factory
 
     public function completed(): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'is_completed' => true,
         ]);
     }
 
     public function incomplete(): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'is_completed' => false,
         ]);
     }
 
     public function forTask(Task $task): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'task_id' => $task->id,
         ]);
     }

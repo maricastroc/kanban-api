@@ -21,7 +21,7 @@ class UpdateTaskRequest extends FormRequest
         $taskId = $task?->id;
 
         return [
-            'column_id' => 'required|exists:columns,id',
+            'column_id' => 'nullable|exists:columns,id',
             'name' => [
                 'required',
                 'string',

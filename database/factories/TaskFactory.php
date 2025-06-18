@@ -24,21 +24,21 @@ class TaskFactory extends Factory
 
     public function pending(): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'status' => 'pending',
         ]);
     }
 
     public function inProgress(): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'status' => 'in_progress',
         ]);
     }
 
     public function completed(): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'status' => 'completed',
         ]);
     }
@@ -68,21 +68,21 @@ class TaskFactory extends Factory
 
     public function forColumn(Column $column): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'column_id' => $column->id,
         ]);
     }
 
     public function overdue(): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'due_date' => $this->faker->dateTimeBetween('-1 month', '-1 day'),
         ]);
     }
 
     public function noDueDate(): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'due_date' => null,
         ]);
     }

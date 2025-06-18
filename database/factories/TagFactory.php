@@ -21,14 +21,14 @@ class TagFactory extends Factory
 
     public function forUser(User $user): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'user_id' => $user->id,
         ]);
     }
 
     public function withColor(string $color): self
     {
-        return $this->state(fn(array $attributes): array => [
+        return $this->state(fn (array $attributes): array => [
             'color' => $color,
         ]);
     }
