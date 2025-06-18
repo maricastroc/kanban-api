@@ -36,6 +36,7 @@ This backend project was a great opportunity to strengthen my understanding of:
 - Eloquent ORM
 
 ## 🔍 Links
+This API is used by the frontend application available at:
 [Deploy](https://kanban-app-maricastroc.vercel.app/)
 
 ## ℹ️ How to run the application?
@@ -58,22 +59,22 @@ composer install
 cp .env.example .env
 ```
 
-> Generate application key
+> Generate application key:
 ```bash
 php artisan key:generate
 ```
 
-> Run migrations
+> Run migrations:
 ```bash
 php artisan migrate
 ```
 
-> Serve the application
+> Serve the application:
 ```bash
 php artisan serve
 ```
 
-> Run all tests
+> Run all tests:
 ```bash
 php artisan test
 ```
