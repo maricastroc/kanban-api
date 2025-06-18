@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'paths' => ['api/*', 'sanctum/csrf-cookie', '*'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['http://localhost:3000', 'https://maricastroc-kanban-app.vercel.app/'],
+    'allowed_origins' => ['http://localhost:3000', 'https://maricastroc-kanban-app.vercel.app'],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => ['Authorization'],
