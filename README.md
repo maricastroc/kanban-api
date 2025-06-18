@@ -12,7 +12,7 @@ RESTful API for the fullstack Kanban app, built with Laravel. This backend manag
 - Associate tags with tasks for better organization
 - Automatically set one active board per user
 - Assign due dates to tasks with automatic status updates
-- Token-based authentication (JWT)
+- Token-based authentication using Laravel Sanctum
 - Search, pagination, and filters for better performance
 - Feature tests with PHPUnit
 
