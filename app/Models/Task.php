@@ -70,6 +70,7 @@ class Task extends Model
                 'order' => $data['order'] ?? $this->order,
                 'status' => $data['status'] ?? $this->status,
                 'due_date' => $data['due_date'] ?? $this->due_date,
+                'column_id' => $data['column_id'] ?? $this->column_id,
             ]);
 
             if (isset($data['subtasks'])) {
@@ -106,7 +107,6 @@ class Task extends Model
                 $this->subtasks()->delete();
             }
 
-            // Atualizar tags
             if (isset($data['tags']) && is_array($data['tags'])) {
                 $this->tags()->sync($data['tags']);
             }
