@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateBoardRequest;
 use App\Http\Resources\BoardResource;
 use App\Models\Board;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -67,6 +68,12 @@ class BoardController extends Controller
                     'board' => new BoardResource($board),
                 ],
             ], 200);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+                'error' => $e->getMessage(),
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -142,6 +149,12 @@ class BoardController extends Controller
                 'success' => true,
                 'message' => 'Board deleted successfully!',
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+                'error' => $e->getMessage(),
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,

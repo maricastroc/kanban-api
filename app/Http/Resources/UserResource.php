@@ -7,7 +7,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BoardResource extends JsonResource
+class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,11 +19,8 @@ class BoardResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'uuid' => $this->uuid,
+            'email' => $this->email,
             'name' => $this->name,
-            'is_active' => $this->is_active,
-            'columns' => ColumnResource::collection($this->whenLoaded('columns')),
-            'user' => new UserResource($this->whenLoaded('user')),
         ];
     }
 }

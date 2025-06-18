@@ -51,7 +51,7 @@ class Task extends Model
                 ]);
             }
 
-            if (!empty($tags)) {
+            if (! empty($tags)) {
                 $task->tags()->sync($tags);
             }
 
@@ -112,6 +112,7 @@ class Task extends Model
             }
 
             DB::commit();
+
             return $this;
         } catch (\Exception $e) {
             DB::rollBack();
