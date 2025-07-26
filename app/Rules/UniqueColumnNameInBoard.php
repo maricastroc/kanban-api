@@ -10,20 +10,20 @@ class UniqueColumnNameInBoard implements Rule
 {
     public function __construct(protected array $columns, protected int|string $currentIndex) {}
 
-    public function passes($attribute, $value): bool
-    {
-        $currentColumn = $this->columns[$this->currentIndex] ?? null;
-        $currentId = $currentColumn['id'] ?? null;
-        $currentName = $value;
+public function passes($attribute, $value): bool
+{
+    $currentColumn = $this->columns[$this->currentIndex] ?? null;
 
-        return collect($this->columns)
-            ->reject(function ($col) use ($currentId) {
-                return isset($col['id']) && $currentId && $col['id'] == $currentId;
-            })
-            ->every(function ($col) use ($currentName) {
-                return !isset($col['name']) || $col['name'] !== $currentName;
-            });
-    }
+    return collect($this->columns)
+        ->reject(function ($col, $i) use ($currentColumn): bool {
+            if (isset($col['id']) && isset($currentColumn['id'])) {
+                return $col['id'] === $currentColumn['id'];
+            }
+
+            return (string) $i === (string) $this->currentIndex;
+        })
+        ->every(fn ($col): bool => ! isset($col['name']) || $col['name'] !== $currentColumn['name']);
+}
 
     public function message(): string
     {
