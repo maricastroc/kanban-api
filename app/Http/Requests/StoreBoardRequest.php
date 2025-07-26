@@ -6,6 +6,7 @@ namespace App\Http\Requests;
 
 use App\Rules\UniqueColumnNameInBoard;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreBoardRequest extends FormRequest
 {
