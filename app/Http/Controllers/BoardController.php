@@ -185,59 +185,6 @@ class BoardController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/boards",
-     *     summary="Create a new board",
-     *     tags={"Boards"},
-     *     security={{"bearerAuth":{}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\JsonContent(
-     *             required={"name", "columns"},
-     *
-     *             @OA\Property(property="name", type="string", example="New Board"),
-     *             @OA\Property(
-     *                 property="columns",
-     *                 type="array",
-     *
-     *                 @OA\Items(
-     *
-     *                     @OA\Property(property="title", type="string", example="To Do"),
-     *                     @OA\Property(property="order", type="integer", example=1)
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=201,
-     *         description="Board created successfully",
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Board created successfully!"),
-     *             @OA\Property(
-     *                 property="data",
-     *                 @OA\Property(
-     *                     property="board",
-     *                     ref="#/components/schemas/Board"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=500,
-     *         description="Failed to create a board",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
-     *     )
-     * )
-     */
     public function store(StoreBoardRequest $request): JsonResponse
     {
         try {
