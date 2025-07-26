@@ -14,15 +14,25 @@ public function passes($attribute, $value): bool
 {
     $currentColumn = $this->columns[$this->currentIndex] ?? null;
 
-    return collect($this->columns)
-        ->reject(function ($col, $i) use ($currentColumn): bool {
-            if (isset($col['id']) && isset($currentColumn['id'])) {
-                return $col['id'] === $currentColumn['id'];
-            }
+    if (! isset($currentColumn['name'])) {
+        return true;
+    }
 
-            return (string) $i === (string) $this->currentIndex;
+    $currentName = $currentColumn['name'];
+    $currentId = $currentColumn['id'] ?? null;
+
+    return collect($this->columns)
+        ->filter(function ($col, $index) use ($currentId) {
+            if (isset($col['id']) && $currentId !== null) {
+                // Ignora a coluna sendo validada pelo id
+                return $col['id'] !== $currentId;
+            }
+            // Se não tem id, ignora pelo índice
+            return (string) $index !== (string) $this->currentIndex;
         })
-        ->every(fn ($col): bool => ! isset($col['name']) || $col['name'] !== $currentColumn['name']);
+        ->every(function ($col) use ($currentName) {
+            return ! isset($col['name']) || $col['name'] !== $currentName;
+        });
 }
 
     public function message(): string
