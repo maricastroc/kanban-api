@@ -21,15 +21,15 @@ class UpdateBoardRequest extends FormRequest
         $columns = $this->input('columns', []);
 
         return [
-        'name' => [
-            'sometimes',
-            'string',
-            'min:3',
-            'max:255',
-            Rule::unique('boards')->ignore($boardId)->where(function ($query) {
-                $query->where('user_id', $this->user()->id);
-            }),
-        ],
+            'name' => [
+                'sometimes',
+                'string',
+                'min:3',
+                'max:255',
+                Rule::unique('boards')->ignore($boardId)->where(function ($query): void {
+                    $query->where('user_id', $this->user()->id);
+                }),
+            ],
             'is_active' => 'sometimes|boolean',
             'columns' => 'sometimes|array',
             'columns.*.uuid' => 'sometimes',
