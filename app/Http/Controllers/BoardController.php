@@ -15,10 +15,66 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @OA\Info(
+ *     title="Board API",
+ *     version="1.0.0",
+ *     description="API para gerenciamento de quadros (boards)"
+ * )
+ *
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ */
 class BoardController extends Controller
 {
     use AuthorizesRequests;
 
+    /**
+     * @OA\Get(
+     *     path="/api/boards",
+     *     summary="List all user boards",
+     *     tags={"Boards"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="with",
+     *         in="query",
+     *         description="Relationships to include (columns,user)",
+     *         required=false,
+     *
+     *         @OA\Schema(type="string")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Boards list",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(
+     *                 property="data",
+     *                 @OA\Property(
+     *                     property="boards",
+     *                     type="array",
+     *
+     *                     @OA\Items(ref="#/components/schemas/Board")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         try {
@@ -51,6 +107,52 @@ class BoardController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/boards/{id}",
+     *     summary="Shows a specific board",
+     *     tags={"Boards"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Board data",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(
+     *                 property="data",
+     *                 @OA\Property(
+     *                     property="board",
+     *                     ref="#/components/schemas/Board"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function show(Board $board): JsonResponse
     {
         try {
@@ -83,6 +185,59 @@ class BoardController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/boards",
+     *     summary="Create a new board",
+     *     tags={"Boards"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *
+     *         @OA\JsonContent(
+     *             required={"name", "columns"},
+     *
+     *             @OA\Property(property="name", type="string", example="New Board"),
+     *             @OA\Property(
+     *                 property="columns",
+     *                 type="array",
+     *
+     *                 @OA\Items(
+     *
+     *                     @OA\Property(property="title", type="string", example="To Do"),
+     *                     @OA\Property(property="order", type="integer", example=1)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=201,
+     *         description="Board created successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Board created successfully!"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 @OA\Property(
+     *                     property="board",
+     *                     ref="#/components/schemas/Board"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Failed to create a board",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function store(StoreBoardRequest $request): JsonResponse
     {
         try {
@@ -106,6 +261,68 @@ class BoardController extends Controller
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/boards/{id}",
+     *     summary="Update an existing board",
+     *     tags={"Boards"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="name", type="string", example="Updated board"),
+     *             @OA\Property(property="is_active", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="columns",
+     *                 type="array",
+     *
+     *                 @OA\Items(
+     *
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="title", type="string", example="To Do"),
+     *                     @OA\Property(property="order", type="integer", example=1)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Board updated successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Board updated successfully!"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 @OA\Property(
+     *                     property="board",
+     *                     ref="#/components/schemas/Board"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Falha ao atualizar quadro",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function update(UpdateBoardRequest $request, Board $board): JsonResponse
     {
         try {
@@ -129,6 +346,47 @@ class BoardController extends Controller
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/boards/{id}",
+     *     summary="Delete a board",
+     *     tags={"Boards"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Board deleted successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Board deleted successfully!")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Failed deleting a board",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function destroy(Board $board): JsonResponse
     {
         try {
@@ -190,6 +448,47 @@ class BoardController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/boards/{id}/active",
+     *     summary="Sets a board as active",
+     *     tags={"Boards"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Board set as active",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Board set as active."),
+     *             @OA\Property(
+     *                 property="data",
+     *                 @OA\Property(
+     *                     property="board",
+     *                     ref="#/components/schemas/Board"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Failed to set board as active",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function setActive(Board $board): JsonResponse
     {
         try {

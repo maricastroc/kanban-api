@@ -13,6 +13,60 @@ class BulkReorderSubtaskController extends Controller
 {
     use AuthorizesRequests;
 
+    /**
+     * @OA\Post(
+     *     path="/api/subtasks/reorder",
+     *     summary="Reorder multiple subtasks of a task",
+     *     description="Reorders subtasks belonging to a specific task by updating their 'order' values.",
+     *     operationId="reorderSubtasks",
+     *     tags={"Subtasks"},
+     *     security={{"bearerAuth":{}}},
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *
+     *         @OA\JsonContent(
+     *             required={"taskId", "subtasks"},
+     *
+     *             @OA\Property(property="taskId", type="integer", example=5),
+     *             @OA\Property(
+     *                 property="subtasks",
+     *                 type="array",
+     *
+     *                 @OA\Items(
+     *                     required={"id", "order"},
+     *
+     *                     @OA\Property(property="id", type="integer", example=12),
+     *                     @OA\Property(property="order", type="integer", example=1)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Subtasks reordered successfully.",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Subtasks reordered successfully.")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error.",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to reorder subtasks."),
+     *             @OA\Property(property="error", type="string", example="Exception message here.")
+     *         )
+     *     )
+     * )
+     */
     public function __invoke(Request $request): JsonResponse
     {
         $validated = $request->validate([

@@ -19,7 +19,15 @@ class StoreBoardRequest extends FormRequest
         $columns = $this->input('columns', []);
 
         return [
-            'name' => 'required|string|unique:boards,name|min:3|max:255',
+            'name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                Rule::unique('boards')->where(function ($query) {
+                    return $query->where('user_id', $this->user()->id);
+                }),
+            ],
             'columns' => 'sometimes|array',
             'columns.*.name' => [
                 'required',
