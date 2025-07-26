@@ -12,9 +12,17 @@ class UniqueColumnNameInBoard implements Rule
 
     public function passes($attribute, $value): bool
     {
+        $currentColumn = $this->columns[$this->currentIndex] ?? null;
+        $currentId = $currentColumn['id'] ?? null;
+        $currentName = $value;
+
         return collect($this->columns)
-            ->reject(fn ($col, $i): bool => (string) $i === (string) $this->currentIndex)
-            ->every(fn ($col): bool => ! isset($col['name']) || $col['name'] !== $value);
+            ->reject(function ($col) use ($currentId) {
+                return isset($col['id']) && $currentId && $col['id'] == $currentId;
+            })
+            ->every(function ($col) use ($currentName) {
+                return !isset($col['name']) || $col['name'] !== $currentName;
+            });
     }
 
     public function message(): string
