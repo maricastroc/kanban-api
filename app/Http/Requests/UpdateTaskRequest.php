@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Column;
 use App\Rules\UniqueSubtaskNameInTask;
 use App\Rules\UniqueTaskNameInColumn;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateTaskRequest extends FormRequest
 {
@@ -26,14 +26,11 @@ class UpdateTaskRequest extends FormRequest
             'column_id' => [
                 'required',
                 'integer',
-                Rule::exists('columns', 'id')->where(function ($query): void {
-                    $query->whereHas('board', function ($q): void {
-                        $q->where('user_id', auth()->id());
-                    });
-                }),
-                function ($attribute, $value, $fail) use ($currentColumnId): void {
-                    if ($value == $currentColumnId) {
-                        $fail('Task is already in this column.');
+                function ($attribute, $value, $fail): void {
+                    if (! Column::where('id', $value)
+                        ->whereHas('board', fn ($q) => $q->where('user_id', auth()->id()))
+                        ->exists()) {
+                        $fail('Invalid column selected');
                     }
                 },
             ],

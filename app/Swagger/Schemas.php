@@ -50,7 +50,6 @@ namespace App\Swagger;
  *     @OA\Property(property="description", type="string", example="Task description"),
  *     @OA\Property(property="column_id", type="integer", example=1),
  *     @OA\Property(property="order", type="integer", example=0),
- *     @OA\Property(property="status", type="string", example="To Do"),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  *     @OA\Property(property="updated_at", type="string", format="date-time"),
  *     @OA\Property(

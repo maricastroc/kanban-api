@@ -1672,10 +1672,6 @@
                                         "type": "integer",
                                         "example": 1
                                     },
-                                    "status": {
-                                        "type": "string",
-                                        "example": "Column name"
-                                    },
                                     "subtasks": {
                                         "type": "array",
                                         "items": {
@@ -1789,10 +1785,6 @@
                                     "column_id": {
                                         "type": "integer",
                                         "example": 2
-                                    },
-                                    "status": {
-                                        "type": "string",
-                                        "example": "Column name"
                                     },
                                     "subtasks": {
                                         "type": "array",
@@ -2027,10 +2019,6 @@
                     "order": {
                         "type": "integer",
                         "example": 0
-                    },
-                    "status": {
-                        "type": "string",
-                        "example": "To Do"
                     },
                     "created_at": {
                         "type": "string",
