@@ -94,6 +94,7 @@ class TaskController extends Controller
      *             @OA\Property(property="name", type="string", example="New task"),
      *             @OA\Property(property="description", type="string", example="Task description"),
      *             @OA\Property(property="column_id", type="integer", example=1),
+     *              @OA\Property(property="status", type="string", example="Column name"),
      *             @OA\Property(
      *                 property="subtasks",
      *                 type="array",
@@ -191,6 +192,7 @@ class TaskController extends Controller
      *             @OA\Property(property="name", type="string", example="Updated task"),
      *             @OA\Property(property="description", type="string", example="Updated description"),
      *             @OA\Property(property="column_id", type="integer", example=2),
+     *              @OA\Property(property="status", type="string", example="Column name"),
      *             @OA\Property(
      *                 property="subtasks",
      *                 type="array",

@@ -20,11 +20,11 @@ class TaskResource extends JsonResource
         return [
             'id' => $this->id,
             'column_id' => $this->column_id,
+            'column_name' => $this->column->name ?? null,
             'uuid' => $this->uuid,
             'name' => $this->name,
             'description' => $this->description,
             'order' => $this->order,
-            'status' => $this->status,
             'due_date' => $this->due_date,
             'subtasks' => SubtaskResource::collection($this->whenLoaded('subtasks')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),

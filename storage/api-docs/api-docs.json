@@ -542,7 +542,7 @@
                         }
                     },
                     "500": {
-                        "description": "Falha ao atualizar quadro",
+                        "description": "Failed to update board",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1672,6 +1672,10 @@
                                         "type": "integer",
                                         "example": 1
                                     },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "Column name"
+                                    },
                                     "subtasks": {
                                         "type": "array",
                                         "items": {
@@ -1785,6 +1789,10 @@
                                     "column_id": {
                                         "type": "integer",
                                         "example": 2
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "Column name"
                                     },
                                     "subtasks": {
                                         "type": "array",

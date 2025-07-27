@@ -312,6 +312,7 @@ class BoardController extends Controller
      *             @OA\Property(property="message", type="string", example="Board updated successfully!"),
      *             @OA\Property(
      *                 property="data",
+     *                 type="object",
      *                 @OA\Property(
      *                     property="board",
      *                     ref="#/components/schemas/Board"
@@ -322,7 +323,7 @@ class BoardController extends Controller
      *
      *     @OA\Response(
      *         response=500,
-     *         description="Falha ao atualizar quadro",
+     *         description="Failed to update board",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )

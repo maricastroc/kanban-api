@@ -15,7 +15,7 @@ class Task extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $fillable = ['name', 'description', 'order', 'column_id', 'status', 'due_date', 'uuid'];
+    protected $fillable = ['name', 'description', 'order', 'column_id', 'due_date', 'uuid'];
 
     protected $casts = [
         'due_date' => 'datetime',
@@ -68,7 +68,6 @@ class Task extends Model
                 'name' => $data['name'] ?? $this->name,
                 'description' => $data['description'] ?? $this->description,
                 'order' => $data['order'] ?? $this->order,
-                'status' => $data['status'] ?? $this->status,
                 'due_date' => $data['due_date'] ?? $this->due_date,
                 'column_id' => $data['column_id'] ?? $this->column_id,
             ]);

@@ -18,8 +18,15 @@ class StoreTaskRequest extends FormRequest
         return [
             'name' => 'required|string|min:3|max:255',
             'description' => 'nullable|string|max:255',
-            'status' => 'required|string|max:255',
-            'column_id' => 'required|exists:columns,id',
+            'column_id' => [
+                'required',
+                'integer',
+                Rule::exists('columns', 'id')->where(function ($query): void {
+                    $query->whereHas('board', function ($q): void {
+                        $q->where('user_id', auth()->id());
+                    });
+                }),
+            ],
             'due_date' => 'nullable|date',
             'subtasks' => 'sometimes|array',
             'subtasks.*.name' => 'required|string|min:3|max:255',
