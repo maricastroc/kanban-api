@@ -326,6 +326,16 @@ class BoardController extends Controller
      *         description="Failed to update board",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *      * @OA\Response(
+     *         response=404,
+     *         description="Board not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Board] 5")
+     *         )
      *     )
      * )
      */
@@ -392,6 +402,16 @@ class BoardController extends Controller
      *         description="Failed deleting a board",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *      * @OA\Response(
+     *         response=404,
+     *         description="Board not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Board] 5")
+     *         )
      *     )
      * )
      */
@@ -536,6 +556,16 @@ class BoardController extends Controller
      *         description="Failed to set board as active",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *      * @OA\Response(
+     *         response=404,
+     *         description="Board not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Board] 5")
+     *         )
      *     )
      * )
      */

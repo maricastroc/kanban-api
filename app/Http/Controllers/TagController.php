@@ -148,7 +148,7 @@ class TagController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/tasks/{task}/tags/{tag}/attach",
+     *     path="/api/tasks/{task}/tags/{tag}",
      *     summary="Attach tag to task",
      *     tags={"Tags"},
      *     security={{"sanctum":{}}},
@@ -196,7 +196,19 @@ class TagController extends Controller
      *         description="Error attaching task",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tag not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Tag] 5")
+     *         )
      *     )
+     *
+     *
      * )
      */
     public function attachToTask(Request $request, Task $task, Tag $tag): JsonResponse
@@ -226,7 +238,7 @@ class TagController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/tasks/{task}/tags/{tag}/detach",
+     *     path="/api/tasks/{task}/tags/{tag}",
      *     summary="Detach tag from task",
      *     tags={"Tags"},
      *     security={{"sanctum":{}}},
@@ -270,6 +282,16 @@ class TagController extends Controller
      *         description="Error detaching task",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tag not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Tag] 5")
+     *         )
      *     )
      * )
      */
@@ -349,6 +371,16 @@ class TagController extends Controller
      *         description="Error updating tag",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tag not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Tag] 5")
+     *         )
      *     )
      * )
      */
@@ -413,6 +445,16 @@ class TagController extends Controller
      *         description="Error deleting tag",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tag not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Tag] 5")
+     *         )
      *     )
      * )
      */

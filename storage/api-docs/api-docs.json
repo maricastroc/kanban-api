@@ -550,6 +550,22 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Board not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Board] 5"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -611,6 +627,22 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Board not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Board] 5"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -741,6 +773,22 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Board not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Board] 5"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -944,6 +992,26 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Task or column not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Task] 123"
+                                        },
+                                        "exception": {
+                                            "type": "string",
+                                            "example": "Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\NotFoundHttpException"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "Internal server error",
                         "content": {
@@ -1081,6 +1149,26 @@
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Task] 123"
+                                        },
+                                        "exception": {
+                                            "type": "string",
+                                            "example": "Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\NotFoundHttpException"
                                         }
                                     },
                                     "type": "object"
@@ -1297,13 +1385,13 @@
                 ]
             }
         },
-        "/api/tasks/{task}/tags/{tag}/attach": {
+        "/api/tasks/{task}/tags/{tag}": {
             "post": {
                 "tags": [
                     "Tags"
                 ],
                 "summary": "Attach tag to task",
-                "operationId": "dff99f9ccef2bc02ad329f0e539f26ba",
+                "operationId": "ce36ed2c55679bbaf5b5b11fc4ba1cd1",
                 "parameters": [
                     {
                         "name": "task",
@@ -1365,6 +1453,22 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Tag not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -1372,15 +1476,13 @@
                         "sanctum": []
                     }
                 ]
-            }
-        },
-        "/api/tasks/{task}/tags/{tag}/detach": {
+            },
             "delete": {
                 "tags": [
                     "Tags"
                 ],
                 "summary": "Detach tag from task",
-                "operationId": "dbbea5e91a0fa24418f220890b9e51ce",
+                "operationId": "0d4192b319444131f49dc5773f4fa35a",
                 "parameters": [
                     {
                         "name": "task",
@@ -1436,6 +1538,22 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tag not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1528,6 +1646,22 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Tag not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -1589,6 +1723,22 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tag not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1672,6 +1822,12 @@
                                         "type": "integer",
                                         "example": 1
                                     },
+                                    "due_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-12-31",
+                                        "nullable": true
+                                    },
                                     "subtasks": {
                                         "type": "array",
                                         "items": {
@@ -1686,6 +1842,14 @@
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "tags": {
+                                        "description": "Array of tag IDs to associate with the task",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
                                         }
                                     }
                                 },
@@ -1729,6 +1893,16 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
                                 }
                             }
                         }
@@ -1786,6 +1960,12 @@
                                         "type": "integer",
                                         "example": 2
                                     },
+                                    "due_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2023-12-31",
+                                        "nullable": true
+                                    },
                                     "subtasks": {
                                         "type": "array",
                                         "items": {
@@ -1808,6 +1988,14 @@
                                                 }
                                             },
                                             "type": "object"
+                                        }
+                                    },
+                                    "tags": {
+                                        "description": "Array of tag IDs to associate with the task (replaces existing tags)",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
                                         }
                                     }
                                 },
@@ -1855,12 +2043,38 @@
                             }
                         }
                     },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "Failed to update task",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Task] 5"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1921,6 +2135,22 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Task] 5"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -2019,6 +2249,13 @@
                     "order": {
                         "type": "integer",
                         "example": 0
+                    },
+                    "due_date": {
+                        "description": "Due date and time of the task",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-12-31T23:59:59Z",
+                        "nullable": true
                     },
                     "created_at": {
                         "type": "string",
@@ -2152,6 +2389,19 @@
                             }
                         },
                         "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "NotFoundError": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                    },
+                    "exception": {
+                        "type": "string",
+                        "example": "Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\NotFoundHttpException"
                     }
                 },
                 "type": "object"

@@ -94,6 +94,7 @@ class TaskController extends Controller
      *             @OA\Property(property="name", type="string", example="New task"),
      *             @OA\Property(property="description", type="string", example="Task description"),
      *             @OA\Property(property="column_id", type="integer", example=1),
+     *             @OA\Property(property="due_date", type="string", format="date-time", nullable=true, example="2023-12-31"),
      *             @OA\Property(
      *                 property="subtasks",
      *                 type="array",
@@ -103,6 +104,16 @@ class TaskController extends Controller
      *                     @OA\Property(property="name", type="string", example="Subtask 1"),
      *                     @OA\Property(property="is_completed", type="boolean", example=false)
      *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="tags",
+     *                 type="array",
+     *
+     *                 @OA\Items(
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 description="Array of tag IDs to associate with the task"
      *             )
      *         )
      *     ),
@@ -130,6 +141,13 @@ class TaskController extends Controller
      *         description="Forbidden",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
      *     ),
      *
      *     @OA\Response(
@@ -191,6 +209,7 @@ class TaskController extends Controller
      *             @OA\Property(property="name", type="string", example="Updated task"),
      *             @OA\Property(property="description", type="string", example="Updated description"),
      *             @OA\Property(property="column_id", type="integer", example=2),
+     *             @OA\Property(property="due_date", type="string", format="date-time", nullable=true, example="2023-12-31"),
      *             @OA\Property(
      *                 property="subtasks",
      *                 type="array",
@@ -202,6 +221,16 @@ class TaskController extends Controller
      *                     @OA\Property(property="is_completed", type="boolean", example=true),
      *                     @OA\Property(property="_destroy", type="boolean", example=false)
      *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="tags",
+     *                 type="array",
+     *
+     *                 @OA\Items(
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 description="Array of tag IDs to associate with the task (replaces existing tags)"
      *             )
      *         )
      *     ),
@@ -232,10 +261,27 @@ class TaskController extends Controller
      *     ),
      *
      *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
      *         response=500,
      *         description="Failed to update task",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     * @OA\Response(
+     *         response=404,
+     *         description="Task not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Task] 5")
+     *         )
      *     )
      * )
      */
@@ -301,7 +347,18 @@ class TaskController extends Controller
      *         description="Failed to delete task",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *      * @OA\Response(
+     *         response=404,
+     *         description="Task not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Task] 5")
+     *         )
      *     )
+     * )
      * )
      */
     public function destroy(Task $task): JsonResponse

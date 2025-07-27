@@ -106,6 +106,17 @@ class MoveTaskController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
      *     ),
      *
+     *  *     @OA\Response(
+     *         response=404,
+     *         description="Task or column not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Task] 123"),
+     *             @OA\Property(property="exception", type="string", example="Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException")
+     *         )
+     *     ),
+     *
      *     @OA\Response(
      *         response=500,
      *         description="Internal server error",

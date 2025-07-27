@@ -50,6 +50,14 @@ namespace App\Swagger;
  *     @OA\Property(property="description", type="string", example="Task description"),
  *     @OA\Property(property="column_id", type="integer", example=1),
  *     @OA\Property(property="order", type="integer", example=0),
+ *      @OA\Property(
+ *         property="due_date",
+ *         type="string",
+ *         format="date-time",
+ *         nullable=true,
+ *         example="2023-12-31T23:59:59Z",
+ *         description="Due date and time of the task"
+ *     ),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  *     @OA\Property(property="updated_at", type="string", format="date-time"),
  *     @OA\Property(
@@ -124,6 +132,13 @@ namespace App\Swagger;
  *             @OA\Items(type="string", example="The new_order must be at least 0.")
  *         )
  *     )
+ * )
+ *
+ *  * @OA\Schema(
+ *     schema="NotFoundError",
+ *
+ *     @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Tag] 5"),
+ *     @OA\Property(property="exception", type="string", example="Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException"),
  * )
  */
 class Schemas {}

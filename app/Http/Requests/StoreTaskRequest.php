@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Models\Column;
+use App\Models\Tag;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTaskRequest extends FormRequest
@@ -35,7 +36,17 @@ class StoreTaskRequest extends FormRequest
             'subtasks.*.name' => 'required|string|min:3|max:255',
             'subtasks.*.is_completed' => 'sometimes|boolean',
             'tags' => 'sometimes|array',
-            'tags.*' => 'integer|exists:tags,id',
+            'tags.*' => [
+                'integer',
+                'exists:tags,id',
+                function ($attribute, $value, $fail): void {
+                    if (! Tag::where('id', $value)
+                        ->where('user_id', auth()->id())
+                        ->exists()) {
+                        $fail('Invalid tag selected');
+                    }
+                },
+        ],
         ];
     }
 }
