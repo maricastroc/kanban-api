@@ -3,7 +3,6 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\BulkReorderSubtaskController;
-use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\MoveTaskController;
 use App\Http\Controllers\ReorderTaskController;
 use App\Http\Controllers\SubtaskController;
@@ -20,8 +19,6 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
     Route::patch('/boards/{board}/activate', [BoardController::class, 'setActive']);
 
     Route::apiResource('boards', BoardController::class);
-
-    Route::apiResource('columns', ColumnController::class);
 
     Route::apiResource('tasks', TaskController::class);
 
