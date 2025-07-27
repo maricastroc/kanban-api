@@ -20,7 +20,6 @@ class UpdateTaskRequest extends FormRequest
     {
         $task = $this->route('task');
         $taskId = $task?->id;
-        $currentColumnId = $task?->column_id;
 
         return [
             'column_id' => [
