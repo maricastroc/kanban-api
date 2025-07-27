@@ -31,7 +31,7 @@ class UniqueColumnNameInBoard implements Rule
                 // Se não tem id, ignora pelo índice
                 return (string) $index !== (string) $this->currentIndex;
             })
-            ->every(fn($col): bool => ! isset($col['name']) || $col['name'] !== $currentName);
+            ->every(fn ($col): bool => ! isset($col['name']) || $col['name'] !== $currentName);
     }
 
     public function message(): string

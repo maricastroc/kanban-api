@@ -30,7 +30,7 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
 
     Route::patch('/subtasks/{subtask}/toggle-completion', [SubtaskController::class, 'toggleCompletion']);
 
-    Route::patch('/subtasks/bulk-reorder', BulkReorderSubtaskController::class);
+    Route::patch('/subtasks/reorder', BulkReorderSubtaskController::class);
 
     Route::apiResource('subtasks', SubtaskController::class)->only(['store', 'update', 'destroy']);
 

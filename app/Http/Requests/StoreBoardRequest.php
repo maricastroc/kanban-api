@@ -25,7 +25,7 @@ class StoreBoardRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:255',
-                Rule::unique('boards')->where(fn($query) => $query->where('user_id', $this->user()->id)),
+                Rule::unique('boards')->where(fn ($query) => $query->where('user_id', $this->user()->id)),
             ],
             'columns' => 'sometimes|array',
             'columns.*.name' => [
