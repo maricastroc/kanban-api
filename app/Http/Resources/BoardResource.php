@@ -22,7 +22,7 @@ class BoardResource extends JsonResource
             'uuid' => $this->uuid,
             'name' => $this->name,
             'is_active' => $this->is_active,
-            'columns' => ColumnResource::collection($this->whenLoaded('columns')),
+            'columns' => ColumnResource::collection($this->columns),
             'user' => new UserResource($this->whenLoaded('user')),
         ];
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Rules\UniqueColumnNameInBoard;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -17,8 +16,7 @@ class UpdateBoardRequest extends FormRequest
 
     public function rules(): array
     {
-        $boardId = $this->route('board')?->id;
-        $columns = $this->input('columns', []);
+        $boardId = $this->route('board')->id;
 
         return [
             'name' => [
@@ -32,21 +30,9 @@ class UpdateBoardRequest extends FormRequest
             ],
             'is_active' => 'sometimes|boolean',
             'columns' => 'sometimes|array',
-            'columns.*.uuid' => 'sometimes',
-            'columns.*.name' => [
-                'required_with:columns',
-                'string',
-                'min:3',
-                'max:255',
-                function ($attribute, $value, $fail) use ($columns): void {
-                    $index = explode('.', $attribute)[1];
-                    $rule = new UniqueColumnNameInBoard($columns, $index);
-                    if (! $rule->passes($attribute, $value)) {
-                        $fail(str_replace(':value', $value, $rule->message()));
-                    }
-                },
-            ],
-            'columns.*.order' => 'sometimes|integer',
+            'columns.*.id' => 'sometimes|integer|exists:columns,id',
+            'columns.*.name' => 'required_with:columns|string|min:3|max:255',
+            'columns.*.order' => 'sometimes|integer|min:0',
         ];
     }
 }
