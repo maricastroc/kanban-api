@@ -17,16 +17,9 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * @OA\Info(
- *     title="Board API",
+ *     title="Kanban API",
  *     version="1.0.0",
- *     description="API para gerenciamento de quadros (boards)"
- * )
- *
- * @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT"
+ *     description="Backend API for Kanban App — RESTful service managing users, boards, tasks, and authentication for daily task management."
  * )
  */
 class BoardController extends Controller
@@ -38,7 +31,7 @@ class BoardController extends Controller
      *     path="/api/boards",
      *     summary="List all user boards",
      *     tags={"Boards"},
-     *     security={{"bearerAuth":{}}},
+     *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
      *         name="with",
@@ -72,6 +65,16 @@ class BoardController extends Controller
      *         description="Internal error",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
      *     )
      * )
      */
@@ -112,7 +115,7 @@ class BoardController extends Controller
      *     path="/api/boards/{id}",
      *     summary="Shows a specific board",
      *     tags={"Boards"},
-     *     security={{"bearerAuth":{}}},
+     *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
      *         name="id",
@@ -151,6 +154,8 @@ class BoardController extends Controller
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
+     *
+     *
      * )
      */
     public function show(Board $board): JsonResponse
@@ -190,7 +195,7 @@ class BoardController extends Controller
      *     path="/api/boards",
      *     summary="Create a new board",
      *     tags={"Boards"},
-     *     security={{"bearerAuth":{}}},
+     *     security={{"sanctum":{}}},
      *
      *     @OA\RequestBody(
      *         required=true,
@@ -205,7 +210,7 @@ class BoardController extends Controller
      *
      *                 @OA\Items(
      *
-     *                     @OA\Property(property="title", type="string", example="To Do"),
+     *                     @OA\Property(property="name", type="string", example="To Do"),
      *                     @OA\Property(property="order", type="integer", example=1)
      *                 )
      *             )
@@ -266,7 +271,7 @@ class BoardController extends Controller
      *     path="/api/boards/{id}",
      *     summary="Update an existing board",
      *     tags={"Boards"},
-     *     security={{"bearerAuth":{}}},
+     *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
      *         name="id",
@@ -290,7 +295,7 @@ class BoardController extends Controller
      *                 @OA\Items(
      *
      *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="title", type="string", example="To Do"),
+     *                     @OA\Property(property="name", type="string", example="To Do"),
      *                     @OA\Property(property="order", type="integer", example=1)
      *                 )
      *             )
@@ -351,7 +356,7 @@ class BoardController extends Controller
      *     path="/api/boards/{id}",
      *     summary="Delete a board",
      *     tags={"Boards"},
-     *     security={{"bearerAuth":{}}},
+     *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
      *         name="id",
@@ -422,6 +427,48 @@ class BoardController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/boards/active",
+     *     summary="Get the currently active board",
+     *     tags={"Boards"},
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Active board retrieved successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(
+     *                 property="data",
+     *                 @OA\Property(
+     *                     property="board",
+     *                     ref="#/components/schemas/Board"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="No active board found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="No active boards found.")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function active(): JsonResponse
     {
         try {
@@ -449,11 +496,11 @@ class BoardController extends Controller
     }
 
     /**
-     * @OA\Post(
-     *     path="/api/boards/{id}/active",
+     * @OA\Patch(
+     *     path="/api/boards/{id}/activate",
      *     summary="Sets a board as active",
      *     tags={"Boards"},
-     *     security={{"bearerAuth":{}}},
+     *     security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
      *         name="id",

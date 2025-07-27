@@ -33,9 +33,16 @@ class Board extends Model
                 ->orderByDesc('created_at')
                 ->first();
 
+            if (! $previousBoard) {
+                $previousBoard = self::where('user_id', $board->user_id)
+                    ->where('id', '!=', $board->id)
+                    ->where('created_at', '>', $board->created_at)
+                    ->orderBy('created_at')
+                    ->first();
+            }
+
             if ($previousBoard) {
-                $previousBoard->update(['is_active' => true]);
-                $previousBoard->deactivateOtherBoards();
+                $previousBoard->activate();
             }
         });
     }

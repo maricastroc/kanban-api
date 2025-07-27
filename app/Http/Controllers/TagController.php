@@ -15,10 +15,49 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @OA\Tag(
+ *     name="Tags",
+ *     description="Tag-related operations"
+ * )
+ */
 class TagController extends Controller
 {
     use AuthorizesRequests;
 
+    /**
+     * @OA\Get(
+     *     path="/api/tags",
+     *     summary="List all user tags",
+     *     tags={"Tags"},
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tags list",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(
+     *                 property="data",
+     *                 @OA\Property(
+     *                     property="tags",
+     *                     type="array",
+     *
+     *                     @OA\Items(ref="#/components/schemas/Tag")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error fetching tags",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         try {
@@ -42,6 +81,47 @@ class TagController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/tags",
+     *     summary="Creates a new tag",
+     *     tags={"Tags"},
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *
+     *         @OA\JsonContent(
+     *             required={"name", "color"},
+     *
+     *             @OA\Property(property="name", type="string", example="Urgent"),
+     *             @OA\Property(property="color", type="string", example="#FF0000")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=201,
+     *         description="ag created successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Tag created successfully!"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 ref="#/components/schemas/Tag"
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error creating tag",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function store(StoreTagRequest $request): JsonResponse
     {
         try {
@@ -66,6 +146,59 @@ class TagController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/tasks/{task}/tags/{tag}/attach",
+     *     summary="Attach tag to task",
+     *     tags={"Tags"},
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="task",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Parameter(
+     *         name="tag",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tag attached to task successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Tag attached to task successfully"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 ref="#/components/schemas/Tag"
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error attaching task",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function attachToTask(Request $request, Task $task, Tag $tag): JsonResponse
     {
         try {
@@ -91,6 +224,55 @@ class TagController extends Controller
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/tasks/{task}/tags/{tag}/detach",
+     *     summary="Detach tag from task",
+     *     tags={"Tags"},
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="task",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Parameter(
+     *         name="tag",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tag detached from task successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Tag detached from task successfully!")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error detaching task",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function detachFromTask(Request $request, Task $task, Tag $tag): JsonResponse
     {
         try {
@@ -115,6 +297,61 @@ class TagController extends Controller
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/tags/{tag}",
+     *     summary="Updates a tag",
+     *     tags={"Tags"},
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="tag",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="name", type="string", example="Urgente"),
+     *             @OA\Property(property="color", type="string", example="#FF0000")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tag updated successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Tag updated successfully!"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 ref="#/components/schemas/Tag"
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error updating tag",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function update(UpdateTagRequest $request, Tag $tag): JsonResponse
     {
         try {
@@ -139,7 +376,45 @@ class TagController extends Controller
     }
 
     /**
-     * Remove uma tag
+     * @OA\Delete(
+     *     path="/api/tags/{tag}",
+     *     summary="Deletes a tag",
+     *     tags={"Tags"},
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Parameter(
+     *         name="tag",
+     *         in="path",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tag deleted successfully",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Tag deleted successfully!")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error deleting tag",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
      */
     public function destroy(Tag $tag): JsonResponse
     {

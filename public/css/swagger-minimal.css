@@ -1,0 +1,59 @@
+/* Reset básico */
+.swagger-ui * {
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* Layout clean */
+.swagger-ui {
+    --border: #e2e8f0;
+    --text: #334155;
+    --primary: #4f46e5;
+    --bg: #f8fafc;
+}
+
+/* Topbar minimalista */
+.swagger-ui .topbar {
+    background: #42848f !important;
+    border-bottom: 1px solid #42848f !important;
+    padding: 12px 0;
+}
+
+.swagger-ui .topbar .topbar-wrapper img {
+    content: url('data:image/svg+xml;utf8,<svg ...>logo</svg>'); /* SVG minimalista */
+    height: 24px !important;
+}
+
+/* Cards simplificados */
+.swagger-ui .opblock {
+    background: white !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    margin-bottom: 12px !important;
+}
+
+/* Botões discretos */
+.swagger-ui .btn {
+    background: white !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+    box-shadow: none !important;
+}
+
+/* Cores de destaque suaves */
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+}
+
+/* Tipografia clean */
+.swagger-ui .info h2 {
+    font-size: 1.5rem !important;
+    font-weight: 500 !important;
+}
+
+/* Espaçamento amplo */
+.swagger-ui .opblock .opblock-summary {
+    padding: 12px !important;
+}
+
