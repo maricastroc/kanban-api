@@ -28,10 +28,10 @@ namespace App\Swagger;
  *
  * @OA\Schema(
  *     schema="Column",
- *     required={"title", "order"},
+ *     required={"name", "order"},
  *
  *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="title", type="string", example="To Do"),
+ *     @OA\Property(property="name", type="string", example="To Do"),
  *     @OA\Property(property="order", type="integer", example=1),
  *     @OA\Property(
  *         property="tasks",
@@ -43,10 +43,10 @@ namespace App\Swagger;
  *
  * @OA\Schema(
  *     schema="Task",
- *     required={"title", "column_id"},
+ *     required={"name", "column_id"},
  *
  *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="title", type="string", example="Task title"),
+ *     @OA\Property(property="name", type="string", example="Task Name"),
  *     @OA\Property(property="description", type="string", example="Task description"),
  *     @OA\Property(property="column_id", type="integer", example=1),
  *     @OA\Property(property="order", type="integer", example=0),
@@ -70,10 +70,10 @@ namespace App\Swagger;
  *
  * @OA\Schema(
  *     schema="Subtask",
- *     required={"title", "task_id", "is_completed"},
+ *     required={"name", "task_id", "is_completed"},
  *
  *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="title", type="string", example="Subtask example"),
+ *     @OA\Property(property="name", type="string", example="Subtask example"),
  *     @OA\Property(property="task_id", type="integer", example=1),
  *     @OA\Property(property="is_completed", type="boolean", example=false),
  *     @OA\Property(property="created_at", type="string", format="date-time"),

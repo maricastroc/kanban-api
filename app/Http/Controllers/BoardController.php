@@ -335,11 +335,13 @@ class BoardController extends Controller
 
             $board = $board->updateWithColumns($request->only(['name', 'is_active', 'columns']));
 
+            $board->load('columns.tasks.subtasks');
+
             return response()->json([
                 'success' => true,
                 'message' => 'Board updated successfully!',
                 'data' => [
-                    'board' => new BoardResource($board->load('columns.tasks.subtasks')),
+                    'board' => new BoardResource($board),
                 ],
             ]);
         } catch (Exception $e) {

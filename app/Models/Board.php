@@ -86,7 +86,7 @@ class Board extends Model
 
             $this->deactivateOtherBoards();
 
-            return $this;
+            return $this->load('columns.tasks.subtasks');
         });
     }
 
@@ -144,6 +144,6 @@ class Board extends Model
 
     public function columns(): HasMany
     {
-        return $this->hasMany(Column::class);
+        return $this->hasMany(Column::class)->with('tasks.subtasks');
     }
 }

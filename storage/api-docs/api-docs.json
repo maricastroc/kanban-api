@@ -1656,11 +1656,11 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "title",
+                                    "name",
                                     "column_id"
                                 ],
                                 "properties": {
-                                    "title": {
+                                    "name": {
                                         "type": "string",
                                         "example": "New task"
                                     },
@@ -1676,7 +1676,7 @@
                                         "type": "array",
                                         "items": {
                                             "properties": {
-                                                "title": {
+                                                "name": {
                                                     "type": "string",
                                                     "example": "Subtask 1"
                                                 },
@@ -1774,7 +1774,7 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "title": {
+                                    "name": {
                                         "type": "string",
                                         "example": "Updated task"
                                     },
@@ -1794,7 +1794,7 @@
                                                     "type": "integer",
                                                     "example": 1
                                                 },
-                                                "title": {
+                                                "name": {
                                                     "type": "string",
                                                     "example": "Updated subtask"
                                                 },
@@ -1969,7 +1969,7 @@
             },
             "Column": {
                 "required": [
-                    "title",
+                    "name",
                     "order"
                 ],
                 "properties": {
@@ -1977,7 +1977,7 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "title": {
+                    "name": {
                         "type": "string",
                         "example": "To Do"
                     },
@@ -1996,7 +1996,7 @@
             },
             "Task": {
                 "required": [
-                    "title",
+                    "name",
                     "column_id"
                 ],
                 "properties": {
@@ -2004,9 +2004,9 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "title": {
+                    "name": {
                         "type": "string",
-                        "example": "Task title"
+                        "example": "Task Name"
                     },
                     "description": {
                         "type": "string",
@@ -2049,7 +2049,7 @@
             },
             "Subtask": {
                 "required": [
-                    "title",
+                    "name",
                     "task_id",
                     "is_completed"
                 ],
@@ -2058,7 +2058,7 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "title": {
+                    "name": {
                         "type": "string",
                         "example": "Subtask example"
                     },

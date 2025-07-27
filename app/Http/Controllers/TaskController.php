@@ -89,9 +89,9 @@ class TaskController extends Controller
      *         required=true,
      *
      *         @OA\JsonContent(
-     *             required={"title", "column_id"},
+     *             required={"name", "column_id"},
      *
-     *             @OA\Property(property="title", type="string", example="New task"),
+     *             @OA\Property(property="name", type="string", example="New task"),
      *             @OA\Property(property="description", type="string", example="Task description"),
      *             @OA\Property(property="column_id", type="integer", example=1),
      *             @OA\Property(
@@ -100,7 +100,7 @@ class TaskController extends Controller
      *
      *                 @OA\Items(
      *
-     *                     @OA\Property(property="title", type="string", example="Subtask 1"),
+     *                     @OA\Property(property="name", type="string", example="Subtask 1"),
      *                     @OA\Property(property="is_completed", type="boolean", example=false)
      *                 )
      *             )
@@ -188,7 +188,7 @@ class TaskController extends Controller
      *
      *         @OA\JsonContent(
      *
-     *             @OA\Property(property="title", type="string", example="Updated task"),
+     *             @OA\Property(property="name", type="string", example="Updated task"),
      *             @OA\Property(property="description", type="string", example="Updated description"),
      *             @OA\Property(property="column_id", type="integer", example=2),
      *             @OA\Property(
@@ -198,7 +198,7 @@ class TaskController extends Controller
      *                 @OA\Items(
      *
      *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="title", type="string", example="Updated subtask"),
+     *                     @OA\Property(property="name", type="string", example="Updated subtask"),
      *                     @OA\Property(property="is_completed", type="boolean", example=true),
      *                     @OA\Property(property="_destroy", type="boolean", example=false)
      *                 )
