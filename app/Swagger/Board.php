@@ -10,7 +10,7 @@ use OpenApi\Annotations as OA;
  *     description="Board-related operations"
  * )
  */
-class Boards
+class Board
 {
     /**
      * @OA\Get(

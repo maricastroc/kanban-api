@@ -10,7 +10,7 @@ use OpenApi\Annotations as OA;
  *     description="Endpoints for managing tasks"
  * )
  */
-class Tasks
+class Task
 {
     /**
      * @OA\Get(

@@ -35,6 +35,20 @@ class Tags
      *     ),
      *
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden – User does not have permission",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
      *         response=500,
      *         description="Error fetching tags",
      *

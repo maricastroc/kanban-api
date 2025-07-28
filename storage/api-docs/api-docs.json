@@ -6,93 +6,6 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/subtasks/{subtask}/toggle-completion": {
-            "patch": {
-                "tags": [
-                    "Subtasks"
-                ],
-                "summary": "Toggles the completion status of a subtask",
-                "description": "Inverts the current completion status (completed/incomplete) of a subtask",
-                "operationId": "toggleSubtaskCompletion",
-                "parameters": [
-                    {
-                        "name": "subtask",
-                        "in": "path",
-                        "description": "Subtask ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Status changed successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Subtask completion toggled successfully!"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Subtask"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Subtask not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Subtask] 5"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal error while switching status",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
         "/api/register": {
             "post": {
                 "tags": [
@@ -320,7 +233,7 @@
                     "Boards"
                 ],
                 "summary": "List all user boards",
-                "operationId": "227c01abddadd7888c2c1d34f3997825",
+                "operationId": "0a82000a3f1370707bbb171f595c4861",
                 "responses": {
                     "200": {
                         "description": "Boards list",
@@ -612,7 +525,7 @@
                     "Boards"
                 ],
                 "summary": "Update an existing board",
-                "operationId": "fc16ee0cead1b4b38347f1e5c8a5b762",
+                "operationId": "e64854b9b2a5a93eb3927a48816a40a8",
                 "parameters": [
                     {
                         "name": "id",
@@ -754,7 +667,7 @@
                     "Boards"
                 ],
                 "summary": "Delete a board",
-                "operationId": "705e5162a408261cdf187f22fa950a8c",
+                "operationId": "440ac61a68cb82b14978419f4de4cad9",
                 "parameters": [
                     {
                         "name": "id",
@@ -855,7 +768,7 @@
                     "Boards"
                 ],
                 "summary": "Get the active board",
-                "operationId": "59ce83f30f5f198107130d534f4d8131",
+                "operationId": "1247ffe9eb0e89f723c8956edbc388fe",
                 "responses": {
                     "200": {
                         "description": "Active board",
@@ -946,7 +859,7 @@
                     "Boards"
                 ],
                 "summary": "Set board as active",
-                "operationId": "770c293132a74ad055f88d50b4d58b6f",
+                "operationId": "07eae99d9bc770a927002cd0d1e865c3",
                 "parameters": [
                     {
                         "name": "id",
@@ -1049,6 +962,103 @@
                 ]
             }
         },
+        "/api/subtasks/{subtask}/toggle-completion": {
+            "patch": {
+                "tags": [
+                    "Subtasks"
+                ],
+                "summary": "Toggles the completion status of a subtask",
+                "description": "Inverts the current completion status (completed/incomplete) of a subtask",
+                "operationId": "toggleSubtaskCompletion",
+                "parameters": [
+                    {
+                        "name": "subtask",
+                        "in": "path",
+                        "description": "Subtask ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status changed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Subtask completion toggled successfully!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Subtask"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden – User does not have permission",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subtask not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Subtask] 5"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error while switching status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/tags": {
             "get": {
                 "tags": [
@@ -1071,6 +1081,26 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden – User does not have permission",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -2230,16 +2260,16 @@
     },
     "tags": [
         {
-            "name": "Subtasks",
-            "description": "Operations related to subtasks"
-        },
-        {
             "name": "Authentication",
             "description": "Endpoints for registration, login, and authentication management via Sanctum"
         },
         {
             "name": "Boards",
             "description": "Board-related operations"
+        },
+        {
+            "name": "Subtasks",
+            "description": "Subtask-related operations"
         },
         {
             "name": "Tags",
