@@ -237,16 +237,18 @@ class BoardController extends Controller
      *             @OA\Property(
      *                 property="name",
      *                 type="string",
-     *                 example="My Board"
+     *                 example="My Board",
+     *                 description="Board name. Must be unique per user and contain between 3 and 50 characters."
      *             ),
      *             @OA\Property(
      *                 property="columns",
      *                 type="array",
+     *                 description="List of initial columns that will be created along with the board.",
      *
      *                 @OA\Items(
      *
-     *                     @OA\Property(property="name", type="string", example="To Do"),
-     *                     @OA\Property(property="order", type="integer", example=1)
+     *                     @OA\Property(property="name", type="string", description="Column name. Ex: 'To Do', 'In Progress', 'Done'", example="To Do"),
+     *                     @OA\Property(property="order", type="integer", description="Defines the column's position on the board (lower values appear first).", example=1)
      *                 )
      *             )
      *         )
@@ -327,11 +329,10 @@ class BoardController extends Controller
     }
 
     /**
-     * @OA\Put(
-     *     path="/api/boards/{id}",
-     *     summary="Update an existing board",
-     *     tags={"Boards"},
-     *     security={{"sanctum":{}}},
+     *     @OA\Put(
+     *        path="/api/boards/{id}",
+     *        summary="Update an existing board",
+     *        tags={"Boards"},
      *
      *     @OA\Parameter(
      *         name="id",
@@ -350,13 +351,14 @@ class BoardController extends Controller
      *             @OA\Property(property="is_active", type="boolean", example=true),
      *             @OA\Property(
      *                 property="columns",
+     *                 description="List of columns that will be updated along with the board.",
      *                 type="array",
      *
      *                 @OA\Items(
      *
      *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="name", type="string", example="To Do"),
-     *                     @OA\Property(property="order", type="integer", example=1)
+     *                     @OA\Property(property="name", type="string", description="Column. Ex: 'To Do', 'In Progress', 'Done'", example="To Do"),
+     *                     @OA\Property(property="order", type="integer", description="Column order on the board (smallest values come first).", example=1)
      *                 )
      *             )
      *         )
@@ -446,7 +448,7 @@ class BoardController extends Controller
     }
 
     /**
-     * @OA\Delete(
+     *      @OA\Delete(
      *     path="/api/boards/{id}",
      *     summary="Delete a board",
      *     tags={"Boards"},
@@ -596,7 +598,7 @@ class BoardController extends Controller
      *         )
      *     ),
      *
-     *      @OA\Response(
+     *     @OA\Response(
      *         response=422,
      *         ref="#/components/schemas/ValidationErrorResponse"
      *     ),

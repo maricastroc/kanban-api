@@ -18,15 +18,32 @@ namespace App\Swagger;
  *
  * @OA\Schema(
  *     schema="Board",
- *     required={"name", "user_id"},
+ *     type="object",
+ *     title="Board",
+ *     description="Represents a board, including its columns and archived status.",
  *
- *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="name", type="string", example="My Board"),
- *     @OA\Property(property="user_id", type="integer", example=1),
- *     @OA\Property(property="is_active", type="boolean", example=true),
+ *     @OA\Property(
+ *         property="id",
+ *         type="integer",
+ *         description="Unique identifier of the board.",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         description="Name of the board. Must be unique per user.",
+ *         example="My Project Board"
+ *     ),
+ *     @OA\Property(
+ *         property="is_archived",
+ *         type="boolean",
+ *         description="Indicates whether the board is archived (true) or active (false).",
+ *         example=false
+ *     ),
  *     @OA\Property(
  *         property="columns",
  *         type="array",
+ *         description="List of columns that belong to this board.",
  *
  *         @OA\Items(ref="#/components/schemas/Column")
  *     )
