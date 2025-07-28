@@ -42,7 +42,6 @@ class MoveTaskController extends Controller
         try {
             DB::beginTransaction();
 
-            // ❗️Validação para impedir duplicação de nomes na nova coluna
             $existingTask = Task::where('column_id', $newColumnId)
                 ->where('name', $task->name)
                 ->where('id', '!=', $task->id)
