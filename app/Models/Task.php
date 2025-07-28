@@ -99,6 +99,7 @@ class Task extends Model
                 }
 
                 $subtasksToDelete = array_diff($existingSubtaskIds, $updatedSubtaskIds);
+
                 if ($subtasksToDelete !== []) {
                     $this->subtasks()->whereIn('id', $subtasksToDelete)->delete();
                 }

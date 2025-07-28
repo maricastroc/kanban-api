@@ -14,11 +14,12 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @OA\Tag(
  *     name="Tasks",
- *     description="Operations related to tasks"
+ *     description="Task-related operations"
  * )
  */
 class TaskController extends Controller
@@ -50,6 +51,20 @@ class TaskController extends Controller
      *     @OA\Response(
      *         response=500,
      *         description="Internal server error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     * @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     * @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
@@ -136,6 +151,13 @@ class TaskController extends Controller
      *         )
      *     ),
      *
+     *      * @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden",
@@ -176,7 +198,7 @@ class TaskController extends Controller
                 ],
             ]);
         } catch (Exception $e) {
-            \DB::rollBack();
+            DB::rollBack();
 
             return response()->json([
                 'success' => false,
@@ -253,6 +275,13 @@ class TaskController extends Controller
      *         )
      *     ),
      *
+     *      * @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden",
@@ -300,7 +329,7 @@ class TaskController extends Controller
                 ],
             ]);
         } catch (Exception $e) {
-            \DB::rollBack();
+            DB::rollBack();
 
             return response()->json([
                 'success' => false,
@@ -333,6 +362,13 @@ class TaskController extends Controller
      *
      *             @OA\Property(property="message", type="string", example="Task deleted successfully!")
      *         )
+     *     ),
+     *
+     *      * @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
      *
      *     @OA\Response(

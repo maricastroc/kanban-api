@@ -24,7 +24,7 @@ class UpdateTaskRequest extends FormRequest
 
         return [
             'column_id' => [
-                'required',
+                'sometimes',
                 'integer',
                 function ($attribute, $value, $fail): void {
                     if (! Column::where('id', $value)
@@ -35,7 +35,7 @@ class UpdateTaskRequest extends FormRequest
                 },
             ],
             'name' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:255',
                 new UniqueTaskNameInColumn($task),

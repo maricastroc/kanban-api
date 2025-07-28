@@ -16,10 +16,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * @OA\Info(
- *     title="Kanban API",
- *     version="1.0.0",
- *     description="Backend API for Kanban App — RESTful service managing users, boards, tasks, and authentication for daily task management."
+ * @OA\Tag(
+ *     name="Boards",
+ *     description="Board-related operations"
  * )
  */
 class BoardController extends Controller
@@ -36,7 +35,7 @@ class BoardController extends Controller
      *     @OA\Parameter(
      *         name="with",
      *         in="query",
-     *         description="Relationships to include (columns,user)",
+     *         description="Comma-separated relations to include: columns.tasks.subtasks,user",
      *         required=false,
      *
      *         @OA\Schema(type="string")
@@ -61,13 +60,6 @@ class BoardController extends Controller
      *     ),
      *
      *     @OA\Response(
-     *         response=500,
-     *         description="Internal error",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
-     *     ),
-     *
-     *     @OA\Response(
      *         response=401,
      *         description="Unauthenticated",
      *
@@ -75,6 +67,20 @@ class BoardController extends Controller
      *
      *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
      * )
      */
@@ -111,16 +117,20 @@ class BoardController extends Controller
     }
 
     /**
-     * @OA\Get(
-     *     path="/api/boards/{id}",
-     *     summary="Shows a specific board",
-     *     tags={"Boards"},
-     *     security={{"sanctum":{}}},
+     *      @OA\Get(
+     *           path="/api/boards/{id}",
+     *           summary="Get board details",
+     *           description="Retrieves full details of a specific board including columns, tasks and subtasks",
+     *           operationId="getBoardById",
+     *           tags={"Boards"},
+     *           security={{"sanctum":{}}},
      *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
+     *         description="ID of the board to retrieve",
+     *         example=1,
      *
      *         @OA\Schema(type="integer")
      *     ),
@@ -142,10 +152,30 @@ class BoardController extends Controller
      *     ),
      *
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *
+     *      @OA\Response(
      *         response=403,
-     *         description="Unauthorized",
+     *         description="Forbidden",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *      @OA\Response(
+     *         response=404,
+     *         description="Board not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Board not found")
+     *         )
      *     ),
      *
      *     @OA\Response(
@@ -154,8 +184,6 @@ class BoardController extends Controller
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
-     *
-     *
      * )
      */
     public function show(Board $board): JsonResponse
@@ -193,17 +221,24 @@ class BoardController extends Controller
     /**
      * @OA\Post(
      *     path="/api/boards",
-     *     summary="Create a new board",
+     *     operationId="createBoard",
+     *     summary="Create board with columns",
+     *     description="Creates a new board with initial columns in a single atomic operation",
      *     tags={"Boards"},
      *     security={{"sanctum":{}}},
      *
      *     @OA\RequestBody(
      *         required=true,
+     *         description="Board data with initial columns",
      *
      *         @OA\JsonContent(
      *             required={"name", "columns"},
      *
-     *             @OA\Property(property="name", type="string", example="New Board"),
+     *             @OA\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 example="My Board"
+     *             ),
      *             @OA\Property(
      *                 property="columns",
      *                 type="array",
@@ -222,19 +257,44 @@ class BoardController extends Controller
      *         description="Board created successfully",
      *
      *         @OA\JsonContent(
+     *             allOf={
      *
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Board created successfully!"),
-     *             @OA\Property(
-     *                 property="data",
-     *                 @OA\Property(
-     *                     property="board",
-     *                     ref="#/components/schemas/Board"
+     *                 @OA\Schema(ref="#/components/schemas/SuccessResponse"),
+     *                 @OA\Schema(
+     *
+     *                     @OA\Property(
+     *                         property="data",
+     *                         @OA\Property(
+     *                             property="board",
+     *                             ref="#/components/schemas/Board"
+     *                         )
+     *                     )
      *                 )
-     *             )
+     *             }
      *         )
      *     ),
      *
+     *      @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *
+     *      @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=422,
+     *         ref="#/components/schemas/ValidationErrorResponse"
+     *     ),
      *     @OA\Response(
      *         response=500,
      *         description="Failed to create a board",
@@ -321,14 +381,24 @@ class BoardController extends Controller
      *         )
      *     ),
      *
-     *     @OA\Response(
-     *         response=500,
-     *         description="Failed to update board",
+     *      @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *
+     *      @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
      *
-     *      * @OA\Response(
+     *      @OA\Response(
      *         response=404,
      *         description="Board not found",
      *
@@ -336,6 +406,17 @@ class BoardController extends Controller
      *
      *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Board] 5")
      *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=422,
+     *         ref="#/components/schemas/ValidationErrorResponse"
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="Failed to update board",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
      * )
      */
@@ -390,21 +471,24 @@ class BoardController extends Controller
      *         )
      *     ),
      *
-     *     @OA\Response(
+     *      @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *
+     *      @OA\Response(
      *         response=403,
-     *         description="Unauthorized",
+     *         description="Forbidden",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
      *
-     *     @OA\Response(
-     *         response=500,
-     *         description="Failed deleting a board",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
-     *     ),
-     *
-     *      * @OA\Response(
+     *      @OA\Response(
      *         response=404,
      *         description="Board not found",
      *
@@ -412,6 +496,17 @@ class BoardController extends Controller
      *
      *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Board] 5")
      *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=422,
+     *         ref="#/components/schemas/ValidationErrorResponse"
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="Failed deleting a board",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
      * )
      */
@@ -473,6 +568,23 @@ class BoardController extends Controller
      *         )
      *     ),
      *
+     *      @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *
+     *      @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="No active board found",
@@ -484,9 +596,13 @@ class BoardController extends Controller
      *         )
      *     ),
      *
+     *      @OA\Response(
+     *         response=422,
+     *         ref="#/components/schemas/ValidationErrorResponse"
+     *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Internal server error",
+     *         description="Failed to get an active Board",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
@@ -551,14 +667,24 @@ class BoardController extends Controller
      *         )
      *     ),
      *
-     *     @OA\Response(
-     *         response=500,
-     *         description="Failed to set board as active",
+     *      @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *
+     *      @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
      *
-     *      * @OA\Response(
+     *      @OA\Response(
      *         response=404,
      *         description="Board not found",
      *
@@ -566,7 +692,18 @@ class BoardController extends Controller
      *
      *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Board] 5")
      *         )
-     *     )
+     *     ),
+     *
+     *      @OA\Response(
+     *         response=422,
+     *         ref="#/components/schemas/ValidationErrorResponse"
+     *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="Failed to set board as active",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
      * )
      */
     public function setActive(Board $board): JsonResponse

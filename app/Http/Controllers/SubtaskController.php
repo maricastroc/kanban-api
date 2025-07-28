@@ -54,10 +54,20 @@ class SubtaskController extends Controller
      *     ),
      *
      *     @OA\Response(
-     *         response=403,
+     *         response=401,
      *         description="Unauthorized",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     * * @OA\Response(
+     *         response=404,
+     *         description="Subtask not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Subtask] 5")
+     *         )
      *     ),
      *
      *     @OA\Response(

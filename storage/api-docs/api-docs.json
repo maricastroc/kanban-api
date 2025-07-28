@@ -238,7 +238,7 @@
                     {
                         "name": "with",
                         "in": "query",
-                        "description": "Relationships to include (columns,user)",
+                        "description": "Comma-separated relations to include: columns.tasks.subtasks,user",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -269,16 +269,6 @@
                             }
                         }
                     },
-                    "500": {
-                        "description": "Internal error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
                     "401": {
                         "description": "Unauthenticated",
                         "content": {
@@ -294,6 +284,26 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -306,9 +316,11 @@
                 "tags": [
                     "Boards"
                 ],
-                "summary": "Create a new board",
-                "operationId": "475fc0adeff918edaca9ab0b788b5e2b",
+                "summary": "Create board with columns",
+                "description": "Creates a new board with initial columns in a single atomic operation",
+                "operationId": "createBoard",
                 "requestBody": {
+                    "description": "Board data with initial columns",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -320,7 +332,7 @@
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "example": "New Board"
+                                        "example": "Meu Board"
                                     },
                                     "columns": {
                                         "type": "array",
@@ -346,32 +358,60 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Board created successfully",
+                        "description": "Board created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SuccessResponse"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "properties": {
+                                                        "board": {
+                                                            "$ref": "#/components/schemas/Board"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Board created successfully!"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "board": {
-                                                    "$ref": "#/components/schemas/Board"
-                                                }
-                                            },
-                                            "type": "object"
+                                            "example": "Unauthenticated"
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
                         "description": "Failed to create a board",
@@ -396,16 +436,19 @@
                 "tags": [
                     "Boards"
                 ],
-                "summary": "Shows a specific board",
-                "operationId": "34f214deef78cf734160f16e50359c00",
+                "summary": "Get board details",
+                "description": "Retrieves full details of a specific board including columns, tasks and subtasks",
+                "operationId": "getBoardById",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID of the board to retrieve",
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "responses": {
@@ -429,12 +472,44 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "403": {
-                        "description": "Unauthorized",
+                        "description": "Forbidden",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Board not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Board not found"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -541,8 +616,24 @@
                             }
                         }
                     },
-                    "500": {
-                        "description": "Failed to update board",
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -563,6 +654,19 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/schemas/ValidationErrorResponse"
+                    },
+                    "500": {
+                        "description": "Failed to update board",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -611,18 +715,24 @@
                             }
                         }
                     },
-                    "403": {
-                        "description": "Unauthorized",
+                    "401": {
+                        "description": "Unauthenticated",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
-                    "500": {
-                        "description": "Failed deleting a board",
+                    "403": {
+                        "description": "Forbidden",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -643,6 +753,19 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/schemas/ValidationErrorResponse"
+                    },
+                    "500": {
+                        "description": "Failed deleting a board",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -683,6 +806,32 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "No active board found",
                         "content": {
@@ -702,6 +851,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
                         "description": "Internal server error",
@@ -767,8 +919,24 @@
                             }
                         }
                     },
-                    "500": {
-                        "description": "Failed to set board as active",
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -792,6 +960,19 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/schemas/ValidationErrorResponse"
+                    },
+                    "500": {
+                        "description": "Failed to set board as active",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -806,8 +987,9 @@
                 "tags": [
                     "Subtasks"
                 ],
-                "summary": "Reorder multiple subtasks of a task",
-                "operationId": "reorderSubtasks",
+                "summary": "Bulk reorder subtasks",
+                "description": "Update the order of multiple subtasks belonging to a specific task in a single operation",
+                "operationId": "bulkReorderSubtasks",
                 "requestBody": {
                     "description": "Subtasks reorder data",
                     "required": true,
@@ -825,6 +1007,7 @@
                                         "example": 5
                                     },
                                     "subtasks": {
+                                        "description": "Array of subtasks with their new positions",
                                         "type": "array",
                                         "items": {
                                             "required": [
@@ -833,16 +1016,20 @@
                                             ],
                                             "properties": {
                                                 "id": {
+                                                    "description": "ID of the subtask to reorder",
                                                     "type": "integer",
                                                     "example": 12
                                                 },
                                                 "order": {
+                                                    "description": "New position of the subtask (0-based index)",
                                                     "type": "integer",
+                                                    "minimum": 0,
                                                     "example": 1
                                                 }
                                             },
                                             "type": "object"
-                                        }
+                                        },
+                                        "minItems": 1
                                     }
                                 },
                                 "type": "object"
@@ -852,7 +1039,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Success response",
+                        "description": "Subtasks reordered successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -867,6 +1054,76 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid subtasks data"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "subtasks": [
+                                                    "The subtasks field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - User doesn't have permission",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found - Task or subtask not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Subtask] 123"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -1114,7 +1371,7 @@
                             }
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "Unauthorized",
                         "content": {
                             "application/json": {
@@ -1237,12 +1494,28 @@
                             }
                         }
                     },
-                    "403": {
+                    "401": {
                         "description": "Unauthorized",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subtask not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Subtask] 5"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1786,6 +2059,26 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -1883,6 +2176,16 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -2033,6 +2336,16 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
                     "403": {
                         "description": "Forbidden",
                         "content": {
@@ -2115,6 +2428,16 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -2365,6 +2688,23 @@
                 },
                 "type": "object"
             },
+            "SuccessResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                    },
+                    "data": {
+                        "description": "Response data",
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
             "ValidationErrorResponse": {
                 "properties": {
                     "message": {
@@ -2422,20 +2762,20 @@
             "description": "Endpoints for registration, login, and authentication management via Sanctum"
         },
         {
+            "name": "Boards",
+            "description": "Board-related operations"
+        },
+        {
             "name": "Subtasks",
             "description": "Subtask-related operations"
         },
         {
             "name": "Tasks",
-            "description": "Operations related to tasks"
+            "description": "Task-related operations"
         },
         {
             "name": "Tags",
             "description": "Tag-related operations"
-        },
-        {
-            "name": "Boards",
-            "description": "Boards"
         }
     ],
     "security": [

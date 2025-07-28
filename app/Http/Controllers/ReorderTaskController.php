@@ -82,7 +82,7 @@ class ReorderTaskController extends Controller
      *     ),
      *
      *     @OA\Response(
-     *         response=403,
+     *         response=401,
      *         description="Unauthorized",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")

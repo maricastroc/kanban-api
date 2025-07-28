@@ -22,8 +22,9 @@ class BulkReorderSubtaskController extends Controller
     /**
      * @OA\Patch(
      *     path="/api/subtasks/reorder",
-     *     summary="Reorder multiple subtasks of a task",
-     *     operationId="reorderSubtasks",
+     *     summary="Bulk reorder subtasks",
+     *     description="Update the order of multiple subtasks belonging to a specific task in a single operation",
+     *     operationId="bulkReorderSubtasks",
      *     tags={"Subtasks"},
      *     security={{"sanctum":{}}},
      *
@@ -31,42 +32,99 @@ class BulkReorderSubtaskController extends Controller
      *         required=true,
      *         description="Subtasks reorder data",
      *
-     *         @OA\MediaType(
-     *             mediaType="application/json",
+     *         @OA\JsonContent(
+     *             required={"taskId", "subtasks"},
      *
-     *             @OA\Schema(
-     *                 required={"taskId", "subtasks"},
+     *             @OA\Property(
+     *                 property="taskId",
+     *                 type="integer",
+     *                 example=5,
+     *                 description="ID of the parent task"
+     *             ),
+     *             @OA\Property(
+     *                 property="subtasks",
+     *                 type="array",
+     *                 minItems=1,
      *
-     *                 @OA\Property(
-     *                     property="taskId",
-     *                     type="integer",
-     *                     example=5,
-     *                     description="ID of the parent task"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="subtasks",
-     *                     type="array",
+     *                 @OA\Items(
+     *                     required={"id", "order"},
      *
-     *                     @OA\Items(
-     *                         required={"id", "order"},
-     *
-     *                         @OA\Property(property="id", type="integer", example=12),
-     *                         @OA\Property(property="order", type="integer", example=1)
+     *                     @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example=12,
+     *                         description="ID of the subtask to reorder"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="order",
+     *                         type="integer",
+     *                         example=1,
+     *                         minimum=0,
+     *                         description="New position of the subtask (0-based index)"
      *                     )
-     *                 )
+     *                 ),
+     *                 description="Array of subtasks with their new positions"
      *             )
      *         )
      *     ),
      *
      *     @OA\Response(
      *         response=200,
-     *         description="Success response",
+     *         description="Subtasks reordered successfully",
      *
      *         @OA\JsonContent(
      *
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Subtasks reordered successfully")
      *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="message", type="string", example="Invalid subtasks data"),
+     *             @OA\Property(property="errors", type="object", example={
+     *                 "subtasks": {"The subtasks field is required."}
+     *             })
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - User doesn't have permission",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found - Task or subtask not found",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="No query results for model [App\\Models\\Subtask] 123"
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
      * )
      */

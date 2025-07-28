@@ -10,6 +10,12 @@ namespace App\Swagger;
  *     name="X-XSRF-TOKEN"
  * )
  *
+ * @OA\Info(
+ *     title="Kanban API",
+ *     version="1.0.0",
+ *     description="Backend API for Kanban App — RESTful service managing users, boards, tasks, and authentication for daily task management."
+ * )
+ *
  * @OA\Schema(
  *     schema="Board",
  *     required={"name", "user_id"},
@@ -105,6 +111,18 @@ namespace App\Swagger;
  *     @OA\Property(property="success", type="boolean", example=false),
  *     @OA\Property(property="message", type="string", example="An error occurred"),
  *     @OA\Property(property="error", type="string", example="Error details")
+ * )
+ *
+ *  @OA\Schema(
+ *     schema="SuccessResponse",
+ *
+ *     @OA\Property(property="success", type="boolean", example=true),
+ *     @OA\Property(property="message", type="string", example="Operation successful"),
+ *     @OA\Property(
+ *         property="data",
+ *         type="object",
+ *         description="Response data"
+ *     )
  * )
  *
  *  * @OA\Schema(
