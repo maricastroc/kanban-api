@@ -119,7 +119,10 @@ class UpdateTaskRequest extends FormRequest
                 'sometimes',
                 'string',
                 'max:255',
-                new UniqueTaskNameInColumn($task),
+                new UniqueTaskNameInColumn(
+                    columnId: $task?->column_id ?? 0,
+                    ignoreTaskId: $task?->id ?? null
+                ),
             ],
             'description' => 'nullable|string|max:500',
             'order' => 'nullable|integer|min:0',
