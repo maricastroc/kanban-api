@@ -6,321 +6,6 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/tasks/{task}/move": {
-            "patch": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Move a task to another column/position",
-                "description": "Move a task to a new column and position, automatically reordering the remaining tasks",
-                "operationId": "moveTask",
-                "parameters": [
-                    {
-                        "name": "task",
-                        "in": "path",
-                        "description": "ID of the task to be moved",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "description": "Data for task movement",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "new_column_id",
-                                    "new_order"
-                                ],
-                                "properties": {
-                                    "new_column_id": {
-                                        "description": "Target column ID",
-                                        "type": "integer",
-                                        "example": 2
-                                    },
-                                    "new_order": {
-                                        "description": "New position in column (0-based index)",
-                                        "type": "integer",
-                                        "example": 0
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Task moved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task moved successfully!"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Task"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Task already in requested position",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task already in the correct column and position."
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Task"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation failed",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Task or column not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Task] 123"
-                                        },
-                                        "exception": {
-                                            "type": "string",
-                                            "example": "Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\NotFoundHttpException"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/tasks/{task}/reorder": {
-            "patch": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Reorder a task in the same column",
-                "description": "Changes the position of a task within the same column, automatically reordering the other tasks",
-                "operationId": "reorderTask",
-                "parameters": [
-                    {
-                        "name": "task",
-                        "in": "path",
-                        "description": "ID of the task to be reordered",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "description": "New task order",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "new_order"
-                                ],
-                                "properties": {
-                                    "new_order": {
-                                        "description": "New column position (based on index 0)",
-                                        "type": "integer",
-                                        "example": 2
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Task successfully reordered",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task reordered successfully!"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Task"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Task is already in the requested position",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task already in correct position."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation failed",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation failed"
-                                        },
-                                        "errors": {
-                                            "properties": {
-                                                "new_order": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "example": "The new order must be at least 0."
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Task not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Task] 123"
-                                        },
-                                        "exception": {
-                                            "type": "string",
-                                            "example": "Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\NotFoundHttpException"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal error while reordering task",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
         "/api/subtasks/{subtask}/toggle-completion": {
             "patch": {
                 "tags": [
@@ -396,954 +81,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/tags": {
-            "get": {
-                "tags": [
-                    "Tags"
-                ],
-                "summary": "List all user tags",
-                "operationId": "4d0f4baf9e6fa992c0d85fbf140ebf17",
-                "responses": {
-                    "200": {
-                        "description": "Tags list",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "properties": {
-                                                "tags": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "$ref": "#/components/schemas/Tag"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error fetching tags",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "Tags"
-                ],
-                "summary": "Creates a new tag",
-                "operationId": "a0a246f29dcb119a2189fd230fc10028",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "color"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Urgent"
-                                    },
-                                    "color": {
-                                        "type": "string",
-                                        "example": "#FF0000"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "ag created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Tag created successfully!"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Tag"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error creating tag",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/tasks/{task}/tags/{tag}": {
-            "post": {
-                "tags": [
-                    "Tags"
-                ],
-                "summary": "Attach tag to task",
-                "operationId": "ce36ed2c55679bbaf5b5b11fc4ba1cd1",
-                "parameters": [
-                    {
-                        "name": "task",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "tag",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Tag attached to task successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Tag attached to task successfully"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Tag"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error attaching task",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Tag not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Tags"
-                ],
-                "summary": "Detach tag from task",
-                "operationId": "0d4192b319444131f49dc5773f4fa35a",
-                "parameters": [
-                    {
-                        "name": "task",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "tag",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Tag detached from task successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Tag detached from task successfully!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error detaching task",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Tag not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/tags/{tag}": {
-            "put": {
-                "tags": [
-                    "Tags"
-                ],
-                "summary": "Updates a tag",
-                "operationId": "41b49eb4f2a830e150f50252f4d831b8",
-                "parameters": [
-                    {
-                        "name": "tag",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Urgent"
-                                    },
-                                    "color": {
-                                        "type": "string",
-                                        "example": "#FF0000"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Tag updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Tag updated successfully!"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Tag"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error updating tag",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Tag not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Tags"
-                ],
-                "summary": "Deletes a tag",
-                "operationId": "383a246a07edec1e79fc652a61402685",
-                "parameters": [
-                    {
-                        "name": "tag",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Tag deleted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Tag deleted successfully!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error deleting tag",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Tag not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/tasks": {
-            "get": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "List all tasks",
-                "operationId": "471d938a3bfaeb6fbd981d7c3e2728b0",
-                "responses": {
-                    "200": {
-                        "description": "List of tasks",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Task"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Create a new task",
-                "operationId": "f803ebdb2300acdb7e93bbe8d0b9a2e8",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "column_id"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "New task"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "example": "Task description"
-                                    },
-                                    "column_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "due_date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2023-12-31",
-                                        "nullable": true
-                                    },
-                                    "subtasks": {
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Subtask 1"
-                                                },
-                                                "is_completed": {
-                                                    "type": "boolean",
-                                                    "example": false
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "tags": {
-                                        "description": "Array of tag IDs to associate with the task",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "example": 1
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Task created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task created successfully!"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "task": {
-                                                    "$ref": "#/components/schemas/Task"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to create task",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
-        "/api/tasks/{task}": {
-            "put": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Update a task",
-                "operationId": "4732012736ffb7728b7e6b7949d3c140",
-                "parameters": [
-                    {
-                        "name": "task",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Updated task"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "example": "Updated description"
-                                    },
-                                    "column_id": {
-                                        "type": "integer",
-                                        "example": 2
-                                    },
-                                    "due_date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2023-12-31",
-                                        "nullable": true
-                                    },
-                                    "subtasks": {
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "example": "Updated subtask"
-                                                },
-                                                "is_completed": {
-                                                    "type": "boolean",
-                                                    "example": true
-                                                },
-                                                "_destroy": {
-                                                    "type": "boolean",
-                                                    "example": false
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "tags": {
-                                        "description": "Array of tag IDs to associate with the task (replaces existing tags)",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "example": 1
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Task updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task updated successfully!"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "task": {
-                                                    "$ref": "#/components/schemas/Task"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to update task",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Task not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Task] 5"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Tasks"
-                ],
-                "summary": "Delete a task",
-                "operationId": "3aa12cf460ff0476704f02693959d7de",
-                "parameters": [
-                    {
-                        "name": "task",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Task deleted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Task deleted successfully!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to delete task",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Task not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Task] 5"
-                                        }
-                                    },
-                                    "type": "object"
                                 }
                             }
                         }
@@ -1656,10 +393,10 @@
                     "Boards"
                 ],
                 "summary": "Create board with columns",
-                "description": "Creates a new board with initial columns in a single atomic operation",
+                "description": "Creates a new board with initial columns",
                 "operationId": "createBoard",
                 "requestBody": {
-                    "description": "Board data with initial columns",
+                    "description": "Board data with columns",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -1670,22 +407,18 @@
                                 ],
                                 "properties": {
                                     "name": {
-                                        "description": "Board name. Must be unique per user and contain between 3 and 50 characters.",
                                         "type": "string",
                                         "example": "My Board"
                                     },
                                     "columns": {
-                                        "description": "List of initial columns that will be created along with the board.",
                                         "type": "array",
                                         "items": {
                                             "properties": {
                                                 "name": {
-                                                    "description": "Column name. Ex: 'To Do', 'In Progress', 'Done'",
                                                     "type": "string",
                                                     "example": "To Do"
                                                 },
                                                 "order": {
-                                                    "description": "Defines the column's position on the board (lower values appear first).",
                                                     "type": "integer",
                                                     "example": 1
                                                 }
@@ -1701,7 +434,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Board created successfully",
+                        "description": "Board created",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1744,7 +477,7 @@
                         }
                     },
                     "403": {
-                        "description": "Forbidden - User doesn't have permission",
+                        "description": "Forbidden - User does not have permission",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1757,7 +490,7 @@
                         "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
-                        "description": "Failed to create a board",
+                        "description": "Failed to create",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1786,7 +519,7 @@
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID of the board to retrieve",
+                        "description": "ID of the board",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1878,7 +611,7 @@
                 "tags": [
                     "Boards"
                 ],
-                "summary": "Update an existing board with columns",
+                "summary": "Update an existing board",
                 "operationId": "fc16ee0cead1b4b38347f1e5c8a5b762",
                 "parameters": [
                     {
@@ -1905,7 +638,6 @@
                                         "example": true
                                     },
                                     "columns": {
-                                        "description": "List of columns that will be updated along with the board.",
                                         "type": "array",
                                         "items": {
                                             "properties": {
@@ -1914,12 +646,10 @@
                                                     "example": 1
                                                 },
                                                 "name": {
-                                                    "description": "Column. Ex: 'To Do', 'In Progress', 'Done'",
                                                     "type": "string",
                                                     "example": "To Do"
                                                 },
                                                 "order": {
-                                                    "description": "Column order on the board (smallest values come first).",
                                                     "type": "integer",
                                                     "example": 1
                                                 }
@@ -1935,7 +665,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Board updated successfully",
+                        "description": "Updated",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1979,7 +709,7 @@
                         }
                     },
                     "403": {
-                        "description": "Forbidden - User doesn't have permission",
+                        "description": "Forbidden - User does not have permission",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1996,7 +726,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Board] 5"
+                                            "example": "Not found"
                                         }
                                     },
                                     "type": "object"
@@ -2008,7 +738,7 @@
                         "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
-                        "description": "Failed to update board",
+                        "description": "Failed to update",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2037,7 +767,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Board deleted successfully",
+                        "description": "Deleted",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2048,7 +778,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Board deleted successfully!"
+                                            "example": "Deleted!"
                                         }
                                     },
                                     "type": "object"
@@ -2073,7 +803,7 @@
                         }
                     },
                     "403": {
-                        "description": "Forbidden - User doesn't have permission",
+                        "description": "Forbidden - User does not have permission",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2083,14 +813,14 @@
                         }
                     },
                     "404": {
-                        "description": "Board not found",
+                        "description": "Not found",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Board] 5"
+                                            "example": "Not found"
                                         }
                                     },
                                     "type": "object"
@@ -2102,7 +832,7 @@
                         "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
-                        "description": "Failed deleting a board",
+                        "description": "Failed to delete",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2124,11 +854,11 @@
                 "tags": [
                     "Boards"
                 ],
-                "summary": "Get the currently active board",
+                "summary": "Get the active board",
                 "operationId": "59ce83f30f5f198107130d534f4d8131",
                 "responses": {
                     "200": {
-                        "description": "Active board retrieved successfully",
+                        "description": "Active board",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2164,7 +894,7 @@
                         }
                     },
                     "403": {
-                        "description": "Forbidden - User doesn't have permission",
+                        "description": "Forbidden - User does not have permission",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2174,15 +904,11 @@
                         }
                     },
                     "404": {
-                        "description": "No active board found",
+                        "description": "Not found",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "No active boards found."
@@ -2197,7 +923,7 @@
                         "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
-                        "description": "Failed to get an active Board",
+                        "description": "Failed to retrieve",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2219,7 +945,7 @@
                 "tags": [
                     "Boards"
                 ],
-                "summary": "Sets a board as active",
+                "summary": "Set board as active",
                 "operationId": "770c293132a74ad055f88d50b4d58b6f",
                 "parameters": [
                     {
@@ -2233,7 +959,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Board set as active",
+                        "description": "Activated",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2277,7 +1003,7 @@
                         }
                     },
                     "403": {
-                        "description": "Forbidden - User doesn't have permission",
+                        "description": "Forbidden - User does not have permission",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2287,14 +1013,14 @@
                         }
                     },
                     "404": {
-                        "description": "Board not found",
+                        "description": "Not found",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "No query results for model [App\\\\Models\\\\Board] 5"
+                                            "example": "Board not found"
                                         }
                                     },
                                     "type": "object"
@@ -2306,7 +1032,7 @@
                         "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
-                        "description": "Failed to set board as active",
+                        "description": "Failed to set active",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2323,54 +1049,72 @@
                 ]
             }
         },
-        "/api/subtasks/reorder": {
-            "patch": {
+        "/api/tags": {
+            "get": {
                 "tags": [
-                    "Subtasks"
+                    "Tags"
                 ],
-                "summary": "Bulk reorder subtasks",
-                "description": "Update the order of multiple subtasks belonging to a specific task in a single operation",
-                "operationId": "bulkReorderSubtasks",
+                "summary": "List all user tags",
+                "operationId": "703df6561d136fa8ae2cbe9d024036d8",
+                "responses": {
+                    "200": {
+                        "description": "Tags list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Tag"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error fetching tags",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Creates a new tag",
+                "operationId": "7783875d4b96f9e8cca434adb0b47eb3",
                 "requestBody": {
-                    "description": "Subtasks reorder data",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "taskId",
-                                    "subtasks"
+                                    "name",
+                                    "color"
                                 ],
                                 "properties": {
-                                    "taskId": {
-                                        "description": "ID of the parent task",
-                                        "type": "integer",
-                                        "example": 5
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Urgent"
                                     },
-                                    "subtasks": {
-                                        "description": "Array of subtasks with their new positions",
-                                        "type": "array",
-                                        "items": {
-                                            "required": [
-                                                "id",
-                                                "order"
-                                            ],
-                                            "properties": {
-                                                "id": {
-                                                    "description": "ID of the subtask to reorder",
-                                                    "type": "integer",
-                                                    "example": 12
-                                                },
-                                                "order": {
-                                                    "description": "New position of the subtask (0-based index)",
-                                                    "type": "integer",
-                                                    "minimum": 0,
-                                                    "example": 1
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "minItems": 1
+                                    "color": {
+                                        "type": "string",
+                                        "example": "#FF0000"
                                     }
                                 },
                                 "type": "object"
@@ -2379,8 +1123,8 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Subtasks reordered successfully",
+                    "201": {
+                        "description": "Tag created successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2391,7 +1135,10 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Subtasks reordered successfully"
+                                            "example": "Tag created successfully!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Tag"
                                         }
                                     },
                                     "type": "object"
@@ -2399,32 +1146,125 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "422": {
+                        "description": "Validation error",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Invalid subtasks data"
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "subtasks": [
-                                                    "The subtasks field is required."
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
                     },
                     "403": {
-                        "description": "Forbidden - User doesn't have permission",
+                        "description": "Forbidden – User does not have permission",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error creating tag",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/tasks/{task}/tags/{tag}": {
+            "post": {
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Attach tag to task",
+                "operationId": "ad047a242e15f64cce5538c244354db8",
+                "parameters": [
+                    {
+                        "name": "task",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "tag",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tag attached to task successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tag attached to task successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Tag"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden – User does not have permission",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error attaching task",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2434,14 +1274,66 @@
                         }
                     },
                     "404": {
-                        "description": "Not Found - Task or subtask not found",
+                        "description": "Tag not found",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "No query results for model [App\\Models\\Subtask] 123"
+                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Detach tag from task",
+                "operationId": "ac3ca1144ddb69b6a0edbabdf077ac95",
+                "parameters": [
+                    {
+                        "name": "task",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "tag",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tag detached from task successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tag detached from task successfully!"
                                         }
                                     },
                                     "type": "object"
@@ -2449,22 +1341,253 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Validation Error",
+                    "401": {
+                        "description": "Unauthenticated",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden – User does not have permission",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error detaching task",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tag not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/tags/{tag}": {
+            "put": {
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Updates a tag",
+                "operationId": "27a40d095d019eca2a98c3a8345c1abf",
+                "parameters": [
+                    {
+                        "name": "tag",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Urgent"
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "#FF0000"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tag updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tag updated successfully!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Tag"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden – User does not have permission",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error updating tag",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tag not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Tags"
+                ],
+                "summary": "Deletes a tag",
+                "operationId": "1cc2a177e6d9b56cba6feec94491a6ab",
+                "parameters": [
+                    {
+                        "name": "tag",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tag deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tag deleted successfully!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden – User does not have permission",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error deleting tag",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tag not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Tag] 5"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -3107,16 +2230,8 @@
     },
     "tags": [
         {
-            "name": "Tasks",
-            "description": "Task-related operations"
-        },
-        {
             "name": "Subtasks",
             "description": "Operations related to subtasks"
-        },
-        {
-            "name": "Tags",
-            "description": "Tag-related operations"
         },
         {
             "name": "Authentication",
@@ -3125,6 +2240,10 @@
         {
             "name": "Boards",
             "description": "Board-related operations"
+        },
+        {
+            "name": "Tags",
+            "description": "Tag-related operations"
         }
     ],
     "security": [
