@@ -110,7 +110,7 @@ namespace App\Swagger;
  *     @OA\Property(property="updated_at", type="string", format="date-time")
  * )
  *
- *  * @OA\Schema(
+ *    @OA\Schema(
  *     schema="Tag",
  *     required={"name", "color", "user_id"},
  *
@@ -142,7 +142,7 @@ namespace App\Swagger;
  *     )
  * )
  *
- *  * @OA\Schema(
+ *  @OA\Schema(
  *     schema="ValidationErrorResponse",
  *
  *     @OA\Property(
@@ -169,7 +169,7 @@ namespace App\Swagger;
  *     )
  * )
  *
- *  * @OA\Schema(
+ *  @OA\Schema(
  *     schema="NotFoundError",
  *
  *     @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Tag] 5"),
