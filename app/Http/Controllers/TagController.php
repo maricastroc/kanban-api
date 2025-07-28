@@ -61,6 +61,7 @@ class TagController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
 
             $this->authorize('viewAny', Tag::class);
@@ -339,7 +340,7 @@ class TagController extends Controller
      *
      *         @OA\JsonContent(
      *
-     *             @OA\Property(property="name", type="string", example="Urgente"),
+     *             @OA\Property(property="name", type="string", example="Urgent"),
      *             @OA\Property(property="color", type="string", example="#FF0000")
      *         )
      *     ),
@@ -372,6 +373,8 @@ class TagController extends Controller
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
+     *
+     * 
      *
      *     @OA\Response(
      *         response=404,
@@ -446,6 +449,8 @@ class TagController extends Controller
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
+     *
+     * 
      *
      *     @OA\Response(
      *         response=404,
