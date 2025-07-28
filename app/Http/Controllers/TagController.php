@@ -374,8 +374,6 @@ class TagController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
      *
-     * 
-     *
      *     @OA\Response(
      *         response=404,
      *         description="Tag not found",
@@ -449,8 +447,6 @@ class TagController extends Controller
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
-     *
-     * 
      *
      *     @OA\Response(
      *         response=404,
