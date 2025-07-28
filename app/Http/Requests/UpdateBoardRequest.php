@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Rules\UniqueColumnNameInBoard;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 /**
  * @OA\Schema(
@@ -18,7 +16,7 @@ use Illuminate\Validation\Rule;
  *     @OA\Property(
  *         property="name",
  *         type="string",
- *         description="New name of the board (optional). Must be between 3 and 50 characters and unique per user.",
+ *         description="New name of the board (optional). Must be between 3 and 50 characters.",
  *         example="Updated Development Board"
  *     ),
  *     @OA\Property(
@@ -66,8 +64,8 @@ class UpdateBoardRequest extends FormRequest
 
     public function rules(): array
     {
-        $boardId = $this->route('board')?->id;
-        $columns = $this->input('columns', []);
+        $this->route('board')?->id;
+        $this->input('columns', []);
 
         return [
             'name' => [
@@ -75,9 +73,6 @@ class UpdateBoardRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:50',
-                Rule::unique('boards')->ignore($boardId)->where(function ($query): void {
-                    $query->where('user_id', $this->user()->id);
-                }),
             ],
             'is_active' => 'sometimes|boolean',
             'columns' => 'sometimes|array',
@@ -87,13 +82,6 @@ class UpdateBoardRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:50',
-                function ($attribute, $value, $fail) use ($columns): void {
-                    $index = explode('.', $attribute)[1];
-                    $rule = new UniqueColumnNameInBoard($columns, $index);
-                    if (! $rule->passes($attribute, $value)) {
-                        $fail(str_replace(':value', $value, $rule->message()));
-                    }
-                },
             ],
             'columns.*.order' => 'sometimes|integer',
         ];

@@ -42,20 +42,6 @@ class MoveTaskController extends Controller
         try {
             DB::beginTransaction();
 
-            $existingTask = Task::where('column_id', $newColumnId)
-                ->where('name', $task->name)
-                ->where('id', '!=', $task->id)
-                ->first();
-
-            if ($existingTask) {
-                DB::rollBack();
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'A task with the same name already exists in the target column.',
-                ], 422);
-            }
-
             Task::where('column_id', $currentColumnId)
                 ->where('order', '>', $currentOrder)
                 ->decrement('order');

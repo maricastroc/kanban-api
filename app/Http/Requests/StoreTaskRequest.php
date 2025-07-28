@@ -6,7 +6,6 @@ namespace App\Http\Requests;
 
 use App\Models\Column;
 use App\Models\Tag;
-use App\Rules\UniqueTaskNameInColumn;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -92,15 +91,6 @@ class StoreTaskRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:255',
-                function ($attribute, $value, $fail): void {
-                    $columnId = $this->input('column_id');
-                    if ($columnId && is_numeric($columnId)) {
-                        $rule = new UniqueTaskNameInColumn((int) $columnId);
-                        if (! $rule->passes($attribute, $value)) {
-                            $fail($rule->message());
-                        }
-                    }
-                },
             ],
             'description' => 'nullable|string|max:255',
             'column_id' => [
@@ -121,13 +111,6 @@ class StoreTaskRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:255',
-                function ($attribute, $value, $fail): void {
-                    $names = collect($this->input('subtasks', []))->pluck('name');
-                    $duplicates = $names->duplicates();
-                    if ($duplicates->isNotEmpty() && $duplicates->contains($value)) {
-                        $fail("The subtask name '{$value}' must be unique within the task.");
-                    }
-                },
             ],
             'subtasks.*.is_completed' => 'sometimes|boolean',
             'tags' => 'sometimes|array',

@@ -6,8 +6,6 @@ namespace App\Http\Requests;
 
 use App\Models\Column;
 use App\Models\Tag;
-use App\Rules\UniqueSubtaskNameInTask;
-use App\Rules\UniqueTaskNameInColumn;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +26,7 @@ use Illuminate\Support\Facades\Auth;
  *         property="name",
  *         type="string",
  *         maxLength=255,
- *         description="Name of the task, unique per column.",
+ *         description="Name of the task. Must be between 3 and 255 characters.",
  *         example="Implement login feature"
  *     ),
  *     @OA\Property(
@@ -67,7 +65,7 @@ use Illuminate\Support\Facades\Auth;
  *                 property="name",
  *                 type="string",
  *                 maxLength=255,
- *                 description="Name of the subtask, unique within the task.",
+ *                 description="Name of the subtask. Must be between 3 and 255 characters.",
  *                 example="Create UI for login"
  *             ),
  *             @OA\Property(
@@ -100,8 +98,7 @@ class UpdateTaskRequest extends FormRequest
 
     public function rules(): array
     {
-        $task = $this->route('task');
-        $taskId = $task?->id;
+        $this->route('task');
 
         return [
             'column_id' => [
@@ -119,10 +116,6 @@ class UpdateTaskRequest extends FormRequest
                 'sometimes',
                 'string',
                 'max:255',
-                new UniqueTaskNameInColumn(
-                    columnId: $task?->column_id ?? 0,
-                    ignoreTaskId: $task?->id ?? null
-                ),
             ],
             'description' => 'nullable|string|max:500',
             'order' => 'nullable|integer|min:0',
@@ -132,16 +125,6 @@ class UpdateTaskRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                function ($attribute, $value, $fail) use ($taskId): void {
-                    $index = explode('.', $attribute)[1];
-                    $subtasks = $this->input('subtasks', []);
-                    $subtask = $subtasks[$index] ?? [];
-
-                    $rule = new UniqueSubtaskNameInTask($taskId, $subtask);
-                    if (! $rule->passes($attribute, $value)) {
-                        $fail($rule->message());
-                    }
-                },
             ],
             'subtasks.*.is_completed' => 'sometimes|boolean',
             'tags' => 'sometimes|array',

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 /**
  * @OA\Schema(
@@ -19,7 +18,7 @@ use Illuminate\Validation\Rule;
  *         property="name",
  *         type="string",
  *         maxLength=255,
- *         description="Name of the subtask. Must be unique within the parent task.",
+ *         description="Name of the subtask. Must be between 3 and 255 characters.",
  *         example="Write unit tests"
  *     ),
  *     @OA\Property(
@@ -52,9 +51,6 @@ class UpdateSubtaskRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('subtasks')
-                    ->where(fn ($query) => $query->where('task_id', $this->subtask->task_id))
-                    ->ignore($this->subtask->id),
             ],
             'is_completed' => 'nullable|boolean',
             'order' => 'nullable|integer',
