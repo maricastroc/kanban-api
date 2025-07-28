@@ -10,7 +10,7 @@ use OpenApi\Annotations as OA;
  *     description="Tag-related operations"
  * )
  */
-class Tags
+class Tag
 {
     /**
      * @OA\Get(
