@@ -234,6 +234,18 @@
                 ],
                 "summary": "List all user boards",
                 "operationId": "0a82000a3f1370707bbb171f595c4861",
+                "parameters": [
+                    {
+                        "name": "with",
+                        "in": "query",
+                        "description": "Relationships to include (comma separated: columns,user)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "columns,user"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Boards list",
@@ -525,11 +537,13 @@
                     "Boards"
                 ],
                 "summary": "Update an existing board",
+                "description": "Updates a board and its columns. Columns without ID will be created as new. Columns with existing ID will be updated. Existing columns not included in the request will be deleted.",
                 "operationId": "e64854b9b2a5a93eb3927a48816a40a8",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID of the board to update",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -537,10 +551,14 @@
                     }
                 ],
                 "requestBody": {
+                    "description": "Board data with columns",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "name"
+                                ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -551,10 +569,12 @@
                                         "example": true
                                     },
                                     "columns": {
+                                        "description": "Array of columns. Include all columns you want to keep",
                                         "type": "array",
                                         "items": {
                                             "properties": {
                                                 "id": {
+                                                    "description": "Required only for existing columns",
                                                     "type": "integer",
                                                     "example": 1
                                                 },
@@ -578,7 +598,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Updated",
+                        "description": "Board updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -660,7 +680,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -767,11 +792,11 @@
                 "tags": [
                     "Boards"
                 ],
-                "summary": "Get the active board",
+                "summary": "Get the currently selected board for the user",
                 "operationId": "1247ffe9eb0e89f723c8956edbc388fe",
                 "responses": {
                     "200": {
-                        "description": "Active board",
+                        "description": "Returns the board currently selected by the user.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -817,7 +842,7 @@
                         }
                     },
                     "404": {
-                        "description": "Not found",
+                        "description": "No board currently selected for this user.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -836,7 +861,7 @@
                         "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
-                        "description": "Failed to retrieve",
+                        "description": "Failed to retrieve the selected board",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -858,7 +883,7 @@
                 "tags": [
                     "Boards"
                 ],
-                "summary": "Set board as active",
+                "summary": "Set the specified board as the user's currently selected board",
                 "operationId": "07eae99d9bc770a927002cd0d1e865c3",
                 "parameters": [
                     {
@@ -872,7 +897,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Activated",
+                        "description": "Board successfully set as the currently selected board for the user.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -926,7 +951,7 @@
                         }
                     },
                     "404": {
-                        "description": "Not found",
+                        "description": "Board not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -945,7 +970,7 @@
                         "$ref": "#/components/schemas/ValidationErrorResponse"
                     },
                     "500": {
-                        "description": "Failed to set active",
+                        "description": "Failed to set the board as selected",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1293,6 +1318,16 @@
                             }
                         }
                     },
+                    "409": {
+                        "description": "Conflict - Resource already in desired state",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConflictError"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "Error attaching task",
                         "content": {
@@ -1387,6 +1422,16 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict - Resource already in desired state",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConflictError"
                                 }
                             }
                         }
@@ -1697,7 +1742,7 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "board_id"
+                                    "column_id"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1715,9 +1760,36 @@
                                         "example": "2023-12-31T23:59:59",
                                         "nullable": true
                                     },
-                                    "board_id": {
+                                    "column_id": {
                                         "type": "integer",
                                         "example": 1
+                                    },
+                                    "subtasks": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "name"
+                                            ],
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Subtask 1"
+                                                },
+                                                "is_completed": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "tags": {
+                                        "description": "Array of tag IDs to associate with the task",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -1762,7 +1834,7 @@
                         }
                     },
                     "403": {
-                        "description": "Forbidden – User does not have permission",
+                        "description": "Forbidden",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1784,7 +1856,8 @@
                 "tags": [
                     "Tasks"
                 ],
-                "summary": "Update a task",
+                "summary": "Update an existing task",
+                "description": "Updates a task and its subtasks. Subtasks without ID will be created as new. Subtasks with existing ID will be updated. Existing subtasks not included in the request will be deleted.",
                 "operationId": "1641a829b121e4e7de6f76aa8bae258f",
                 "parameters": [
                     {
@@ -1817,7 +1890,7 @@
                                     "due_date": {
                                         "type": "string",
                                         "format": "date-time",
-                                        "example": "2023-12-31",
+                                        "example": "2023-12-31T23:59:59",
                                         "nullable": true
                                     },
                                     "subtasks": {
@@ -1887,26 +1960,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    },
                     "422": {
                         "description": "Validation error",
                         "content": {
@@ -1917,8 +1970,18 @@
                             }
                         }
                     },
-                    "500": {
-                        "description": "Failed to update task",
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1939,6 +2002,16 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update task",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -2064,314 +2137,6 @@
                 },
                 "type": "object"
             },
-            "StoreBoardRequest": {
-                "title": "Board Creation Request",
-                "description": "Payload used to create a new board, optionally including initial columns.",
-                "required": [
-                    "name"
-                ],
-                "properties": {
-                    "name": {
-                        "description": "Name of the board to be created. Must be between 3 and 50 characters.",
-                        "type": "string",
-                        "example": "New Development Board"
-                    },
-                    "columns": {
-                        "description": "(Optional) List of columns to be created along with the board.",
-                        "type": "array",
-                        "items": {
-                            "required": [
-                                "name"
-                            ],
-                            "properties": {
-                                "name": {
-                                    "description": "Name of the column. Must be between 3 and 50 characters.",
-                                    "type": "string",
-                                    "example": "To Do"
-                                },
-                                "order": {
-                                    "description": "(Optional) Display order of the column.",
-                                    "type": "integer",
-                                    "example": 1
-                                }
-                            },
-                            "type": "object"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "StoreSubtaskRequest": {
-                "title": "Subtask Creation Request",
-                "description": "Payload used to create a new subtask associated with an existing task.",
-                "required": [
-                    "name",
-                    "task_id"
-                ],
-                "properties": {
-                    "name": {
-                        "description": "Name of the subtask. Must be between 3 and 255 characters.",
-                        "type": "string",
-                        "example": "Write unit tests"
-                    },
-                    "task_id": {
-                        "description": "ID of the task that this subtask belongs to. Must exist in the database.",
-                        "type": "integer",
-                        "format": "int64",
-                        "example": 42
-                    }
-                },
-                "type": "object"
-            },
-            "StoreTagRequest": {
-                "title": "Tag Creation Request",
-                "description": "Payload used to create a new tag.",
-                "required": [
-                    "name"
-                ],
-                "properties": {
-                    "name": {
-                        "description": "Name of the tag. Must be between 3 and 255 characters.",
-                        "type": "string",
-                        "example": "Urgent"
-                    },
-                    "color": {
-                        "description": "Optional color for the tag, as a string (e.g., hex code or color name). Must be between 3 and 255 characters.",
-                        "type": "string",
-                        "example": "#FF0000",
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "StoreTaskRequest": {
-                "title": "Task Creation Request",
-                "description": "Payload to create a new task with optional subtasks and tags.",
-                "required": [
-                    "name",
-                    "column_id"
-                ],
-                "properties": {
-                    "name": {
-                        "description": "Name of the task. Must be between 3 and 255 characters.",
-                        "type": "string",
-                        "example": "Implement authentication"
-                    },
-                    "description": {
-                        "description": "Optional short description of the task.",
-                        "type": "string",
-                        "example": "Add login and registration functionality.",
-                        "nullable": true
-                    },
-                    "column_id": {
-                        "description": "ID of the column where this task belongs. Must belong to the authenticated user's board.",
-                        "type": "integer",
-                        "example": 5
-                    },
-                    "due_date": {
-                        "description": "Optional due date for the task in YYYY-MM-DD format.",
-                        "type": "string",
-                        "format": "date",
-                        "example": "2025-08-15",
-                        "nullable": true
-                    },
-                    "subtasks": {
-                        "description": "Optional list of subtasks for this task.",
-                        "type": "array",
-                        "items": {
-                            "required": [
-                                "name"
-                            ],
-                            "properties": {
-                                "name": {
-                                    "description": "Name of the subtask.",
-                                    "type": "string",
-                                    "example": "Create login page"
-                                },
-                                "is_completed": {
-                                    "description": "Subtask completion status.",
-                                    "type": "boolean",
-                                    "example": false
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "tags": {
-                        "description": "Optional list of tag IDs to associate with this task.",
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "example": 2
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "UpdateBoardRequest": {
-                "title": "Board Update Request",
-                "description": "Payload to update an existing board, optionally including columns.",
-                "properties": {
-                    "name": {
-                        "description": "New name of the board (optional). Must be between 3 and 50 characters and unique per user.",
-                        "type": "string",
-                        "example": "Updated Development Board"
-                    },
-                    "is_active": {
-                        "description": "Flag to set the board as active or inactive.",
-                        "type": "boolean",
-                        "example": true
-                    },
-                    "columns": {
-                        "description": "List of columns to update or add in the board.",
-                        "type": "array",
-                        "items": {
-                            "properties": {
-                                "uuid": {
-                                    "description": "UUID of the column to update. Omit for new columns.",
-                                    "type": "string",
-                                    "example": "a3f1e4c2-7b3d-4f57-9e23-12d4b1a3c456"
-                                },
-                                "name": {
-                                    "description": "Name of the column. Required if columns property is present.",
-                                    "type": "string",
-                                    "example": "In Progress"
-                                },
-                                "order": {
-                                    "description": "Order of the column in the board. Lower values appear first.",
-                                    "type": "integer",
-                                    "example": 2
-                                }
-                            },
-                            "type": "object"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "UpdateSubtaskRequest": {
-                "title": "Subtask Update Request",
-                "description": "Payload to update an existing subtask.",
-                "required": [
-                    "name"
-                ],
-                "properties": {
-                    "name": {
-                        "description": "Name of the subtask. Must be unique within the parent task.",
-                        "type": "string",
-                        "maxLength": 255,
-                        "example": "Write unit tests"
-                    },
-                    "is_completed": {
-                        "description": "Completion status of the subtask.",
-                        "type": "boolean",
-                        "example": false,
-                        "nullable": true
-                    },
-                    "order": {
-                        "description": "Ordering index of the subtask relative to siblings.",
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "UpdateTagRequest": {
-                "title": "Tag Update Request",
-                "description": "Payload to update an existing tag.",
-                "required": [
-                    "name",
-                    "color"
-                ],
-                "properties": {
-                    "name": {
-                        "description": "Name of the tag. Must be unique.",
-                        "type": "string",
-                        "maxLength": 255,
-                        "minLength": 3,
-                        "example": "Urgent"
-                    },
-                    "color": {
-                        "description": "Color associated with the tag. Must be unique.",
-                        "type": "string",
-                        "maxLength": 255,
-                        "minLength": 3,
-                        "example": "#FF0000"
-                    }
-                },
-                "type": "object"
-            },
-            "UpdateTaskRequest": {
-                "title": "Task Update Request",
-                "description": "Payload for updating an existing task with optional fields and nested subtasks and tags.",
-                "properties": {
-                    "column_id": {
-                        "description": "ID of the column where the task belongs. Must be valid and belong to the authenticated user.",
-                        "type": "integer",
-                        "example": 3
-                    },
-                    "name": {
-                        "description": "Name of the task, unique per column.",
-                        "type": "string",
-                        "maxLength": 255,
-                        "example": "Implement login feature"
-                    },
-                    "description": {
-                        "description": "Optional description for the task.",
-                        "type": "string",
-                        "maxLength": 500,
-                        "example": "Detailed description about the login feature implementation.",
-                        "nullable": true
-                    },
-                    "order": {
-                        "description": "Position order of the task in the column. Minimum value is 0.",
-                        "type": "integer",
-                        "example": 1,
-                        "nullable": true
-                    },
-                    "due_date": {
-                        "description": "Due date for the task in ISO 8601 format.",
-                        "type": "string",
-                        "format": "date",
-                        "example": "2025-08-15",
-                        "nullable": true
-                    },
-                    "subtasks": {
-                        "description": "Optional list of subtasks belonging to the task.",
-                        "type": "array",
-                        "items": {
-                            "required": [
-                                "name"
-                            ],
-                            "properties": {
-                                "name": {
-                                    "description": "Name of the subtask, unique within the task.",
-                                    "type": "string",
-                                    "maxLength": 255,
-                                    "example": "Create UI for login"
-                                },
-                                "is_completed": {
-                                    "description": "Subtask completion status.",
-                                    "type": "boolean",
-                                    "example": false,
-                                    "nullable": true
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "tags": {
-                        "description": "Optional list of tag IDs to associate with the task.",
-                        "type": "array",
-                        "items": {
-                            "type": "integer",
-                            "example": 5
-                        }
-                    }
-                },
-                "type": "object"
-            },
             "Board": {
                 "title": "Board",
                 "description": "Represents a board, including its columns and archived status.",
@@ -2382,12 +2147,12 @@
                         "example": 1
                     },
                     "name": {
-                        "description": "Name of the board. Must be unique per user.",
+                        "description": "Name of the board. Must be between 3 and 50 characters.",
                         "type": "string",
                         "example": "My Project Board"
                     },
-                    "is_archived": {
-                        "description": "Indicates whether the board is archived (true) or active (false).",
+                    "is_active": {
+                        "description": "Indicates whether this board is currently selected and being worked on by the user.",
                         "type": "boolean",
                         "example": false
                     },
@@ -2408,16 +2173,19 @@
                 ],
                 "properties": {
                     "id": {
+                        "description": "Unique identifier of the column.",
                         "type": "integer",
                         "example": 1
                     },
                     "name": {
+                        "description": "Name of the column. Must be between 3 and 50 characters.",
                         "type": "string",
-                        "example": "To Do"
+                        "example": "To-do"
                     },
                     "order": {
+                        "description": "(Optional) Display order of the column.",
                         "type": "integer",
-                        "example": 1
+                        "example": "1"
                     },
                     "tasks": {
                         "type": "array",
@@ -2435,30 +2203,38 @@
                 ],
                 "properties": {
                     "id": {
+                        "description": "Unique identifier of the task.",
                         "type": "integer",
                         "example": 1
                     },
                     "name": {
+                        "description": "Name of the task. Must be between 3 and 255 characters.",
                         "type": "string",
-                        "example": "Task Name"
+                        "example": "To-do"
                     },
                     "description": {
+                        "description": "Optional description for the task. Must have a maximum of 500 characters.",
                         "type": "string",
-                        "example": "Task description"
+                        "maxLength": 500,
+                        "example": "Detailed description about the login feature implementation.",
+                        "nullable": true
                     },
                     "column_id": {
+                        "description": "ID of the column where the task belongs. Must be valid and belong to the authenticated user.",
                         "type": "integer",
-                        "example": 1
+                        "example": 3
                     },
                     "order": {
+                        "description": "Position order of the task in the column. Minimum value is 0.",
                         "type": "integer",
-                        "example": 0
+                        "example": 1,
+                        "nullable": true
                     },
                     "due_date": {
-                        "description": "Due date and time of the task",
+                        "description": "Optional due date for the task in YYYY-MM-DD format.",
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2023-12-31T23:59:59Z",
+                        "format": "date",
+                        "example": "2025-08-15",
                         "nullable": true
                     },
                     "created_at": {
@@ -2492,18 +2268,22 @@
                 ],
                 "properties": {
                     "id": {
+                        "description": "Unique identifier of the subtask.",
                         "type": "integer",
                         "example": 1
                     },
                     "name": {
+                        "description": "Name of the subtask. Must be between 3 and 255 characters.",
                         "type": "string",
-                        "example": "Subtask example"
+                        "example": "Subtask"
                     },
                     "task_id": {
+                        "description": "ID of the task where the subtask belongs. Must be valid and belong to the authenticated user.",
                         "type": "integer",
-                        "example": 1
+                        "example": 3
                     },
                     "is_completed": {
+                        "description": "Indicates whether the subtask is completed (true) or not (false).",
                         "type": "boolean",
                         "example": false
                     },
@@ -2623,6 +2403,322 @@
                     "exception": {
                         "type": "string",
                         "example": "Symfony\\\\Component\\\\HttpKernel\\\\Exception\\\\NotFoundHttpException"
+                    }
+                },
+                "type": "object"
+            },
+            "ConflictError": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Tag is already linked to the task"
+                    },
+                    "error_type": {
+                        "type": "string",
+                        "example": "Conflict"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreBoardRequest": {
+                "title": "Board Creation Request",
+                "description": "Payload used to create a new board, optionally including initial columns.",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Name of the board to be created. Must be between 3 and 50 characters.",
+                        "type": "string",
+                        "example": "New Development Board"
+                    },
+                    "columns": {
+                        "description": "(Optional) List of columns to be created along with the board.",
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "name"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "description": "Name of the column. Must be between 3 and 50 characters.",
+                                    "type": "string",
+                                    "example": "To Do"
+                                },
+                                "order": {
+                                    "description": "(Optional) Display order of the column.",
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "StoreSubtaskRequest": {
+                "title": "Subtask Creation Request",
+                "description": "Payload used to create a new subtask associated with an existing task.",
+                "required": [
+                    "name",
+                    "task_id"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Name of the subtask. Must be between 3 and 255 characters.",
+                        "type": "string",
+                        "example": "Write unit tests"
+                    },
+                    "task_id": {
+                        "description": "ID of the task that this subtask belongs to. Must exist in the database.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 42
+                    }
+                },
+                "type": "object"
+            },
+            "StoreTagRequest": {
+                "title": "Tag Creation Request",
+                "description": "Payload used to create a new tag.",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Name of the tag. Must be between 3 and 255 characters.",
+                        "type": "string",
+                        "example": "Urgent"
+                    },
+                    "color": {
+                        "description": "Optional color for the tag, as a string (e.g., hex code or color name). Must be between 3 and 255 characters.",
+                        "type": "string",
+                        "example": "#FF0000",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "StoreTaskRequest": {
+                "title": "Task Creation Request",
+                "description": "Payload to create a new task with optional subtasks and tags.",
+                "required": [
+                    "name",
+                    "column_id"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Name of the task. Must be between 3 and 255 characters.",
+                        "type": "string",
+                        "example": "Implement authentication"
+                    },
+                    "description": {
+                        "description": "Optional description for the task. Must have a maximum of 500 characters.",
+                        "type": "string",
+                        "maxLength": 500,
+                        "example": "Detailed description about the login feature implementation.",
+                        "nullable": true
+                    },
+                    "column_id": {
+                        "description": "ID of the column where the task belongs. Must be valid and belong to the authenticated user.",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "due_date": {
+                        "description": "Optional due date for the task in YYYY-MM-DD format.",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-08-15",
+                        "nullable": true
+                    },
+                    "subtasks": {
+                        "description": "Optional list of subtasks for this task.",
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "name"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "description": "Name of the subtask.",
+                                    "type": "string",
+                                    "example": "Create login page"
+                                },
+                                "is_completed": {
+                                    "description": "Subtask completion status.",
+                                    "type": "boolean",
+                                    "example": false
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "tags": {
+                        "description": "Optional list of tag IDs to associate with this task.",
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateBoardRequest": {
+                "title": "Board Update Request",
+                "description": "Payload to update an existing board, optionally including columns.",
+                "properties": {
+                    "name": {
+                        "description": "New name of the board (optional). Must be between 3 and 50 characters.",
+                        "type": "string",
+                        "example": "Updated Development Board"
+                    },
+                    "is_active": {
+                        "description": "Flag to set the board as active or inactive.",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "columns": {
+                        "description": "List of columns to update or add in the board.",
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "uuid": {
+                                    "description": "UUID of the column to update. Omit for new columns.",
+                                    "type": "string",
+                                    "example": "a3f1e4c2-7b3d-4f57-9e23-12d4b1a3c456"
+                                },
+                                "name": {
+                                    "description": "Name of the column. Required if columns property is present.",
+                                    "type": "string",
+                                    "example": "In Progress"
+                                },
+                                "order": {
+                                    "description": "Order of the column in the board. Lower values appear first.",
+                                    "type": "integer",
+                                    "example": 2
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateSubtaskRequest": {
+                "title": "Subtask Update Request",
+                "description": "Payload to update an existing subtask.",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Name of the subtask. Must be between 3 and 255 characters.",
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Write unit tests"
+                    },
+                    "is_completed": {
+                        "description": "Completion status of the subtask.",
+                        "type": "boolean",
+                        "example": false,
+                        "nullable": true
+                    },
+                    "order": {
+                        "description": "Ordering index of the subtask relative to siblings.",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateTagRequest": {
+                "title": "Tag Update Request",
+                "description": "Payload to update an existing tag.",
+                "required": [
+                    "name",
+                    "color"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Name of the tag. Must be unique.",
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 3,
+                        "example": "Urgent"
+                    },
+                    "color": {
+                        "description": "Color associated with the tag. Must be unique.",
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 3,
+                        "example": "#FF0000"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateTaskRequest": {
+                "title": "Task Update Request",
+                "description": "Payload for updating an existing task with optional fields and nested subtasks and tags.",
+                "properties": {
+                    "column_id": {
+                        "description": "ID of the column where the task belongs. Must be valid and belong to the authenticated user.",
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "name": {
+                        "description": "Name of the task. Must be between 3 and 255 characters.",
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Implement login feature"
+                    },
+                    "description": {
+                        "description": "Optional description for the task. Must have a maximum of 500 characters.",
+                        "type": "string",
+                        "maxLength": 500,
+                        "example": "Detailed description about the login feature implementation.",
+                        "nullable": true
+                    },
+                    "due_date": {
+                        "description": "Due date for the task in ISO 8601 format.",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-08-15",
+                        "nullable": true
+                    },
+                    "subtasks": {
+                        "description": "Optional list of subtasks belonging to the task.",
+                        "type": "array",
+                        "items": {
+                            "required": [
+                                "name"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "description": "Name of the subtask. Must be between 3 and 255 characters.",
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "example": "Create UI for login"
+                                },
+                                "is_completed": {
+                                    "description": "Subtask completion status.",
+                                    "type": "boolean",
+                                    "example": false,
+                                    "nullable": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "tags": {
+                        "description": "Optional list of tag IDs to associate with the task.",
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "example": 5
+                        }
                     }
                 },
                 "type": "object"

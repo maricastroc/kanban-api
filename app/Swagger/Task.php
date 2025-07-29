@@ -62,12 +62,30 @@ class Task
      *         required=true,
      *
      *         @OA\JsonContent(
-     *             required={"name", "board_id"},
+     *             required={"name", "column_id"},
      *
      *             @OA\Property(property="name", type="string", example="New task"),
      *             @OA\Property(property="description", type="string", example="Task description", nullable=true),
      *             @OA\Property(property="due_date", type="string", format="date-time", nullable=true, example="2023-12-31T23:59:59"),
-     *             @OA\Property(property="board_id", type="integer", example=1)
+     *             @OA\Property(property="column_id", type="integer", example=1),
+     *             @OA\Property(
+     *                 property="subtasks",
+     *                 type="array",
+     *
+     *                 @OA\Items(
+     *                     required={"name"},
+     *
+     *                     @OA\Property(property="name", type="string", example="Subtask 1"),
+     *                     @OA\Property(property="is_completed", type="boolean", example=false)
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="tags",
+     *                 type="array",
+     *
+     *                 @OA\Items(type="integer", example=1),
+     *                 description="Array of tag IDs to associate with the task"
+     *             )
      *         )
      *     ),
      *
@@ -76,32 +94,14 @@ class Task
      *         description="Task created",
      *
      *         @OA\JsonContent(
-     *             type="object",
      *
      *             @OA\Property(property="data", ref="#/components/schemas/Task")
      *         )
      *     ),
      *
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=403,
-     *         description="Forbidden – User does not have permission",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
-     *     ),
+     *     @OA\Response(response=422, description="Validation error", @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")),
+     *     @OA\Response(response=401, description="Unauthenticated", @OA\JsonContent(ref="#/components/schemas/ErrorResponse")),
+     *     @OA\Response(response=403, description="Forbidden", @OA\JsonContent(ref="#/components/schemas/ErrorResponse")),
      * )
      */
     public function store(): void {}
@@ -109,7 +109,8 @@ class Task
     /**
      * @OA\Put(
      *     path="/api/tasks/{task}",
-     *     summary="Update a task",
+     *     summary="Update an existing task",
+     *     description="Updates a task and its subtasks. Subtasks without ID will be created as new. Subtasks with existing ID will be updated. Existing subtasks not included in the request will be deleted.",
      *     tags={"Tasks"},
      *     security={{"sanctum":{}}},
      *
@@ -129,7 +130,7 @@ class Task
      *             @OA\Property(property="name", type="string", example="Updated task"),
      *             @OA\Property(property="description", type="string", example="Updated description"),
      *             @OA\Property(property="column_id", type="integer", example=2),
-     *             @OA\Property(property="due_date", type="string", format="date-time", nullable=true, example="2023-12-31"),
+     *             @OA\Property(property="due_date", type="string", format="date-time", nullable=true, example="2023-12-31T23:59:59"),
      *             @OA\Property(
      *                 property="subtasks",
      *                 type="array",
@@ -146,10 +147,7 @@ class Task
      *                 property="tags",
      *                 type="array",
      *
-     *                 @OA\Items(
-     *                     type="integer",
-     *                     example=1
-     *                 ),
+     *                 @OA\Items(type="integer", example=1),
      *                 description="Array of tag IDs to associate with the task (replaces existing tags)"
      *             )
      *         )
@@ -163,53 +161,15 @@ class Task
      *
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Task updated successfully!"),
-     *             @OA\Property(
-     *                 property="data",
-     *                 @OA\Property(
-     *                     property="task",
-     *                     ref="#/components/schemas/Task"
-     *                 )
-     *             )
+     *             @OA\Property(property="data", @OA\Property(property="task", ref="#/components/schemas/Task"))
      *         )
      *     ),
      *
-     *      * @OA\Response(
-     *         response=401,
-     *         description="Unauthorized",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=403,
-     *         description="Forbidden",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=500,
-     *         description="Failed to update task",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Task not found",
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Task] 5")
-     *         )
-     *     )
+     *     @OA\Response(response=422, description="Validation error", @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")),
+     *     @OA\Response(response=401, description="Unauthenticated", @OA\JsonContent(ref="#/components/schemas/ErrorResponse")),
+     *     @OA\Response(response=403, description="Forbidden", @OA\JsonContent(ref="#/components/schemas/ErrorResponse")),
+     *     @OA\Response(response=404, description="Task not found", @OA\JsonContent(@OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Task] 5"))),
+     *     @OA\Response(response=500, description="Failed to update task", @OA\JsonContent(ref="#/components/schemas/ErrorResponse"))
      * )
      */
     public function update(): void {}

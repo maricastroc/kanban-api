@@ -168,6 +168,13 @@ class Tag
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
      *
+     *  @OA\Response(
+     *     response=409,
+     *     description="Conflict - Resource already in desired state",
+     *
+     *     @OA\JsonContent(ref="#/components/schemas/ConflictError")
+     * ),
+     *
      *     @OA\Response(
      *         response=500,
      *         description="Error attaching task",
@@ -235,6 +242,13 @@ class Tag
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
+     *
+     *  @OA\Response(
+     *     response=409,
+     *     description="Conflict - Resource already in desired state",
+     *
+     *     @OA\JsonContent(ref="#/components/schemas/ConflictError")
+     * ),
      *
      *     @OA\Response(
      *         response=500,

@@ -76,6 +76,13 @@ class TagController extends Controller
                 throw new \Exception('Unauthorized');
             }
 
+            if ($task->tags()->where('tag_id', $tag->id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tag is already linked to the task',
+                ], 409);
+            }
+
             $task->tags()->attach($tag->id);
 
             return response()->json([
@@ -97,8 +104,15 @@ class TagController extends Controller
         try {
             $user = Auth::user();
 
-            if ($task->column->board->user_id !== $user->id) {
+            if ($task->column->board->user_id !== $user->id || $tag->user_id !== $user->id) {
                 throw new \Exception('Unauthorized');
+            }
+
+            if (! $task->tags()->where('tag_id', $tag->id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tag is already unlinked from the task',
+                ], 409);
             }
 
             $task->tags()->detach($tag->id);

@@ -31,13 +31,13 @@ namespace App\Swagger;
  *     @OA\Property(
  *         property="name",
  *         type="string",
- *         description="Name of the board. Must be unique per user.",
+ *         description="Name of the board. Must be between 3 and 50 characters.",
  *         example="My Project Board"
  *     ),
  *     @OA\Property(
- *         property="is_archived",
+ *         property="is_active",
  *         type="boolean",
- *         description="Indicates whether the board is archived (true) or active (false).",
+ *         description="Indicates whether this board is currently selected and being worked on by the user.",
  *         example=false
  *     ),
  *     @OA\Property(
@@ -53,9 +53,24 @@ namespace App\Swagger;
  *     schema="Column",
  *     required={"name", "order"},
  *
- *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="name", type="string", example="To Do"),
- *     @OA\Property(property="order", type="integer", example=1),
+ *     @OA\Property(
+ *         property="id",
+ *         type="integer",
+ *         description="Unique identifier of the column.",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         description="Name of the column. Must be between 3 and 50 characters.",
+ *         example="To-do"
+ *     ),
+ *     @OA\Property(
+ *         property="order",
+ *         type="integer",
+ *         description="(Optional) Display order of the column.",
+ *         example="1",
+ *     ),
  *     @OA\Property(
  *         property="tasks",
  *         type="array",
@@ -68,18 +83,46 @@ namespace App\Swagger;
  *     schema="Task",
  *     required={"name", "column_id"},
  *
- *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="name", type="string", example="Task Name"),
- *     @OA\Property(property="description", type="string", example="Task description"),
- *     @OA\Property(property="column_id", type="integer", example=1),
- *     @OA\Property(property="order", type="integer", example=0),
+ *     @OA\Property(
+ *         property="id",
+ *         type="integer",
+ *         description="Unique identifier of the task.",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         description="Name of the task. Must be between 3 and 255 characters.",
+ *         example="To-do"
+ *     ),
+ *     @OA\Property(
+ *         property="description",
+ *         type="string",
+ *         maxLength=500,
+ *         nullable=true,
+ *         description="Optional description for the task. Must have a maximum of 500 characters.",
+ *         example="Detailed description about the login feature implementation."
+ *     ),
+ *     @OA\Property(
+ *         property="column_id",
+ *         type="integer",
+ *         description="ID of the column where the task belongs. Must be valid and belong to the authenticated user.",
+ *         example=3
+ *     ),
  *      @OA\Property(
+ *         property="order",
+ *         type="integer",
+ *         nullable=true,
+ *         description="Position order of the task in the column. Minimum value is 0.",
+ *         example=1
+ *     ),
+ *     @OA\Property(
  *         property="due_date",
  *         type="string",
- *         format="date-time",
+ *         format="date",
  *         nullable=true,
- *         example="2023-12-31T23:59:59Z",
- *         description="Due date and time of the task"
+ *         description="Optional due date for the task in YYYY-MM-DD format.",
+ *         example="2025-08-15"
  *     ),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  *     @OA\Property(property="updated_at", type="string", format="date-time"),
@@ -102,10 +145,30 @@ namespace App\Swagger;
  *     schema="Subtask",
  *     required={"name", "task_id", "is_completed"},
  *
- *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="name", type="string", example="Subtask example"),
- *     @OA\Property(property="task_id", type="integer", example=1),
- *     @OA\Property(property="is_completed", type="boolean", example=false),
+ *     @OA\Property(
+ *         property="id",
+ *         type="integer",
+ *         description="Unique identifier of the subtask.",
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         description="Name of the subtask. Must be between 3 and 255 characters.",
+ *         example="Subtask"
+ *     ),
+ *     @OA\Property(
+ *         property="task_id",
+ *         type="integer",
+ *         description="ID of the task where the subtask belongs. Must be valid and belong to the authenticated user.",
+ *         example=3
+ *     ),
+ *     @OA\Property(
+ *         property="is_completed",
+ *         type="boolean",
+ *         description="Indicates whether the subtask is completed (true) or not (false).",
+ *         example=false
+ *     ),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  *     @OA\Property(property="updated_at", type="string", format="date-time")
  * )
@@ -174,6 +237,21 @@ namespace App\Swagger;
  *
  *     @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\Tag] 5"),
  *     @OA\Property(property="exception", type="string", example="Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException"),
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ConflictError",
+ *
+ *     @OA\Property(
+ *         property="message",
+ *         type="string",
+ *         example="Tag is already linked to the task"
+ *     ),
+ *     @OA\Property(
+ *         property="error_type",
+ *         type="string",
+ *         example="Conflict"
+ *     )
  * )
  */
 class Schemas {}
