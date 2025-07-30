@@ -220,100 +220,100 @@ test('getActiveBoard returns correct board', function (): void {
     $this->assertEquals($active->id, $result->id);
 });
 
-test('deactivateOtherBoards deactivates all other boards for the user', function () {
+test('deactivateOtherBoards deactivates all other boards for the user', function (): void {
     $user = User::factory()->create();
-    
+
     $board1 = Board::factory()->create(['user_id' => $user->id, 'is_active' => true]);
     $board2 = Board::factory()->create(['user_id' => $user->id, 'is_active' => true]);
     $board3 = Board::factory()->create(['user_id' => $user->id, 'is_active' => true]);
-    
+
     $board1->activate();
-    
+
     $board1->refresh();
     $board2->refresh();
     $board3->refresh();
-    
+
     $this->assertTrue($board1->is_active);
     $this->assertFalse($board2->is_active);
     $this->assertFalse($board3->is_active);
 });
 
-test('deactivateOtherBoards does not affect other users boards', function () {
+test('deactivateOtherBoards does not affect other users boards', function (): void {
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();
-    
+
     $boardUser1 = Board::factory()->create(['user_id' => $user1->id, 'is_active' => true]);
     $boardUser2 = Board::factory()->create(['user_id' => $user2->id, 'is_active' => true]);
-    
+
     $boardUser1->activate();
-    
+
     $boardUser2->refresh();
-    
+
     $this->assertTrue($boardUser2->is_active);
 });
 
-test('board creation validation', function () {
+test('board creation validation', function (): void {
     $this->actingAs($this->user);
-    
+
     // Teste para nome vazio
     $response = $this->postJson('/api/boards', [
         'name' => '',
-        'columns' => [['name' => 'Valid']]
+        'columns' => [['name' => 'Valid']],
     ]);
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['name']);
-    
+
     // Teste para nome muito longo
     $response = $this->postJson('/api/boards', [
         'name' => str_repeat('a', 256),
-        'columns' => [['name' => 'Valid']]
+        'columns' => [['name' => 'Valid']],
     ]);
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['name']);
-    
+
     // Teste para coluna sem nome
     $response = $this->postJson('/api/boards', [
         'name' => 'Valid',
-        'columns' => [['name' => '']]
+        'columns' => [['name' => '']],
     ]);
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['columns.0.name']);
-    
+
     // Teste para coluna com nome muito longo
     $response = $this->postJson('/api/boards', [
         'name' => 'Valid',
-        'columns' => [['name' => str_repeat('a', 256)]]
+        'columns' => [['name' => str_repeat('a', 256)]],
     ]);
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['columns.0.name']);
 });
 
-test('board update validation', function () {
+test('board update validation', function (): void {
     $board = Board::factory()->create(['user_id' => $this->user->id]);
     $column = $board->columns()->create(['name' => 'Original']);
-    
+
     $this->actingAs($this->user);
-    
+
     // Teste para nome vazio
     $response = $this->putJson(route('api.boards.update', $board), [
         'name' => '',
-        'columns' => [['id' => $column->id, 'name' => 'Valid']]
+        'columns' => [['id' => $column->id, 'name' => 'Valid']],
     ]);
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['name']);
-    
+
     // Teste para coluna sem ID e sem nome
     $response = $this->putJson(route('api.boards.update', $board), [
         'name' => 'Valid',
-        'columns' => [['name' => '']]
+        'columns' => [['name' => '']],
     ]);
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['columns.0.name']);
-    
+
     // Teste para coluna com ID inválido
     $response = $this->putJson(route('api.boards.update', $board), [
         'name' => 'Valid',
-        'columns' => [['id' => 999, 'name' => 'Invalid']]
+        'columns' => [['id' => 999, 'name' => 'Invalid']],
     ]);
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['columns.0.id']);
