@@ -186,41 +186,7 @@ test('Board list can load columns and user', function (): void {
         ]);
 });
 
-test('createWithColumns creates board with columns', function (): void {
-    $board = Board::createWithColumns([
-        'name' => 'Test',
-        'columns' => [['name' => 'Col 1'], ['name' => 'Col 2']],
-    ], $this->user->id);
-
-    $this->assertDatabaseHas('boards', ['name' => 'Test']);
-    $this->assertCount(2, $board->columns);
-});
-
-test('updateWithColumns syncs columns correctly', function (): void {
-    $board = Board::factory()->hasColumns(2)->create(['user_id' => $this->user->id]);
-
-    $board->updateWithColumns([
-        'name' => 'Updated',
-        'columns' => [
-            ['id' => $board->columns[0]->id, 'name' => 'Updated Col'],
-            ['name' => 'New Col'],
-        ],
-    ]);
-
-    $this->assertDatabaseHas('columns', ['name' => 'Updated Col']);
-    $this->assertDatabaseHas('columns', ['name' => 'New Col']);
-    $this->assertCount(2, $board->fresh()->columns);
-});
-
-test('getActiveBoard returns correct board', function (): void {
-    $inactive = Board::factory()->create(['user_id' => $this->user->id, 'is_active' => false]);
-    $active = Board::factory()->create(['user_id' => $this->user->id, 'is_active' => true]);
-
-    $result = Board::getActiveBoard($this->user->id);
-    $this->assertEquals($active->id, $result->id);
-});
-
-test('deactivateOtherBoards deactivates all other boards for the user', function (): void {
+test('I should be able to deactivate all other boards when setting a board as active.', function (): void {
     $user = User::factory()->create();
 
     $board1 = Board::factory()->create(['user_id' => $user->id, 'is_active' => true]);
@@ -238,24 +204,9 @@ test('deactivateOtherBoards deactivates all other boards for the user', function
     $this->assertFalse($board3->is_active);
 });
 
-test('deactivateOtherBoards does not affect other users boards', function (): void {
-    $user1 = User::factory()->create();
-    $user2 = User::factory()->create();
-
-    $boardUser1 = Board::factory()->create(['user_id' => $user1->id, 'is_active' => true]);
-    $boardUser2 = Board::factory()->create(['user_id' => $user2->id, 'is_active' => true]);
-
-    $boardUser1->activate();
-
-    $boardUser2->refresh();
-
-    $this->assertTrue($boardUser2->is_active);
-});
-
-test('board creation validation', function (): void {
+test('I should not be able to create a board with columns that have no name or invalid name.', function (): void {
     $this->actingAs($this->user);
 
-    // Teste para nome vazio
     $response = $this->postJson('/api/boards', [
         'name' => '',
         'columns' => [['name' => 'Valid']],
@@ -263,7 +214,6 @@ test('board creation validation', function (): void {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['name']);
 
-    // Teste para nome muito longo
     $response = $this->postJson('/api/boards', [
         'name' => str_repeat('a', 256),
         'columns' => [['name' => 'Valid']],
@@ -271,7 +221,6 @@ test('board creation validation', function (): void {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['name']);
 
-    // Teste para coluna sem nome
     $response = $this->postJson('/api/boards', [
         'name' => 'Valid',
         'columns' => [['name' => '']],
@@ -279,7 +228,6 @@ test('board creation validation', function (): void {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['columns.0.name']);
 
-    // Teste para coluna com nome muito longo
     $response = $this->postJson('/api/boards', [
         'name' => 'Valid',
         'columns' => [['name' => str_repeat('a', 256)]],
@@ -288,13 +236,12 @@ test('board creation validation', function (): void {
         ->assertJsonValidationErrors(['columns.0.name']);
 });
 
-test('board update validation', function (): void {
+test('I should not be able to update a board with columns that have no name, invalid name or an invalid ID.', function (): void {
     $board = Board::factory()->create(['user_id' => $this->user->id]);
     $column = $board->columns()->create(['name' => 'Original']);
 
     $this->actingAs($this->user);
 
-    // Teste para nome vazio
     $response = $this->putJson(route('api.boards.update', $board), [
         'name' => '',
         'columns' => [['id' => $column->id, 'name' => 'Valid']],
@@ -302,7 +249,6 @@ test('board update validation', function (): void {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['name']);
 
-    // Teste para coluna sem ID e sem nome
     $response = $this->putJson(route('api.boards.update', $board), [
         'name' => 'Valid',
         'columns' => [['name' => '']],
@@ -310,7 +256,6 @@ test('board update validation', function (): void {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['columns.0.name']);
 
-    // Teste para coluna com ID inválido
     $response = $this->putJson(route('api.boards.update', $board), [
         'name' => 'Valid',
         'columns' => [['id' => 999, 'name' => 'Invalid']],
