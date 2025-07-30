@@ -27,7 +27,7 @@ class UpdateBoardRequest extends FormRequest
             ],
             'is_active' => 'sometimes|boolean',
             'columns' => 'sometimes|array',
-            'columns.*.id' => 'sometimes|exists:columns,id',
+            'columns.*.id' => 'nullable|exists:columns,id',
             'columns.*.name' => [
                 'required_with:columns',
                 'string',
