@@ -29,7 +29,7 @@ class StoreTagRequest extends FormRequest
                     ->where('user_id', $userId),
             ],
             'color' => [
-                'nullable',
+                'required',
                 'string',
                 'min:3',
                 'max:255',

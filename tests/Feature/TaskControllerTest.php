@@ -303,14 +303,13 @@ test('Subtasks should be deleted when task is deleted', function (): void {
     $this->assertDatabaseMissing('subtasks', ['id' => $subtask->id]);
 });
 
-
-test('Invalid due_date should be handled gracefully', function () {
+test('Invalid due_date should be handled gracefully', function (): void {
     $response = $this->postJson('/api/tasks', [
         'name' => 'Invalid Date',
         'column_id' => $this->column->id,
         'due_date' => 'invalid-date',
     ]);
-    
+
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['due_date']);
 });

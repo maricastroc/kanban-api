@@ -2073,6 +2073,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/schemas/ValidationErrorResponse"
                     }
                 },
                 "security": [

@@ -10,6 +10,7 @@ use App\Http\Resources\TagResource;
 use App\Models\Tag;
 use App\Models\Task;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -46,6 +47,8 @@ class TagController extends Controller
     public function store(StoreTagRequest $request): JsonResponse
     {
         try {
+            $this->authorize('create', Tag::class);
+
             $user = Auth::user();
 
             $tag = Tag::create([
@@ -70,11 +73,7 @@ class TagController extends Controller
     public function attachToTask(Request $request, Task $task, Tag $tag): JsonResponse
     {
         try {
-            $user = Auth::user();
-
-            if ($task->column->board->user_id !== $user->id) {
-                throw new \Exception('Unauthorized');
-            }
+            $this->authorize('attachTag', [$task, $tag]);
 
             if ($task->tags()->where('tag_id', $tag->id)->exists()) {
                 return response()->json([
@@ -90,6 +89,12 @@ class TagController extends Controller
                 'message' => 'Tag attached to task successfully',
                 'data' => new TagResource($tag),
             ]);
+
+        } catch (AuthorizationException) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -102,11 +107,7 @@ class TagController extends Controller
     public function detachFromTask(Request $request, Task $task, Tag $tag): JsonResponse
     {
         try {
-            $user = Auth::user();
-
-            if ($task->column->board->user_id !== $user->id || $tag->user_id !== $user->id) {
-                throw new \Exception('Unauthorized');
-            }
+            $this->authorize('detachTag', [$task, $tag]);
 
             if (! $task->tags()->where('tag_id', $tag->id)->exists()) {
                 return response()->json([
@@ -121,6 +122,12 @@ class TagController extends Controller
                 'success' => true,
                 'message' => 'Tag detached from task successfully!',
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+                'error' => $e->getMessage(),
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -133,8 +140,6 @@ class TagController extends Controller
     public function update(UpdateTagRequest $request, Tag $tag): JsonResponse
     {
         try {
-            $user = Auth::user();
-
             $this->authorize('update', $tag);
 
             $tag->update($request->validated());
@@ -144,6 +149,12 @@ class TagController extends Controller
                 'message' => 'Tag updated successfully!',
                 'data' => new TagResource($tag),
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+                'error' => $e->getMessage(),
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -156,8 +167,6 @@ class TagController extends Controller
     public function destroy(Tag $tag): JsonResponse
     {
         try {
-            $user = Auth::user();
-
             $this->authorize('delete', $tag);
 
             $tag->delete();
@@ -166,6 +175,12 @@ class TagController extends Controller
                 'success' => true,
                 'message' => 'Tag deleted successfully!',
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+                'error' => $e->getMessage(),
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,

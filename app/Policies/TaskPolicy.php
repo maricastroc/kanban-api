@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Board;
 use App\Models\Column;
+use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
 
@@ -63,5 +64,23 @@ class TaskPolicy
     public function forceDelete(User $user, Column $column): bool
     {
         return false;
+    }
+
+    public function attachTag(User $user, Task $task, Tag $tag)
+    {
+        if ($task->column->board->user_id !== $user->id) {
+            return false;
+        }
+
+        return $tag->user_id === $user->id;
+    }
+
+    public function detachTag(User $user, Task $task, Tag $tag)
+    {
+        if ($task->column->board->user_id !== $user->id) {
+            return false;
+        }
+
+        return $tag->user_id === $user->id;
     }
 }

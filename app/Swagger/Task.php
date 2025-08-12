@@ -214,6 +214,8 @@ class Task
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
+     *
+     *      @OA\Response(response=422, ref="#/components/schemas/ValidationErrorResponse"),
      * )
      */
     public function destroy(): void {}

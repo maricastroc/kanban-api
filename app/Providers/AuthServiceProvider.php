@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Board;
 use App\Models\Column;
+use App\Models\Subtask;
+use App\Models\Tag;
 use App\Models\Task;
 use App\Policies\BoardPolicy;
 use App\Policies\ColumnPolicy;
