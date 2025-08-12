@@ -12,7 +12,7 @@ class BoardPolicy
      */
     public function viewAny(User $user): bool
     {
-        return auth()->id() === $user->id;
+        return true;
     }
 
     /**
@@ -28,7 +28,7 @@ class BoardPolicy
      */
     public function create(User $user): bool
     {
-        return auth()->id() === $user->id;
+        return true;
     }
 
     /**

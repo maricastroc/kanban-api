@@ -41,6 +41,10 @@ class UpdateTaskRequest extends FormRequest
             'order' => 'nullable|integer|min:0',
             'due_date' => 'nullable|date',
             'subtasks' => 'sometimes|array',
+            'subtasks.*.id' => [
+                'nullable',
+                'exists:subtasks,id',
+            ],
             'subtasks.*.name' => [
                 'required',
                 'string',

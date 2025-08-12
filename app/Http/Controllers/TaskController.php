@@ -10,6 +10,8 @@ use App\Http\Resources\TaskResource;
 use App\Models\Column;
 use App\Models\Task;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,7 +49,13 @@ class TaskController extends Controller
     {
         try {
             $user = Auth::user();
-            $column = Column::with('board')->findOrFail($request->column_id);
+
+            $column = Column::with('board')
+                ->where('id', $request->column_id)
+                ->whereHas('board', function ($query) use ($user): void {
+                    $query->where('user_id', $user->id);
+                })
+                ->firstOrFail();
 
             $this->authorize('create', [$column->board]);
 
@@ -60,6 +68,11 @@ class TaskController extends Controller
                     'task' => new TaskResource($task->load('subtasks')),
                 ],
             ]);
+        } catch (ModelNotFoundException) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to create task in this column',
+            ], 403);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -85,6 +98,12 @@ class TaskController extends Controller
                     'task' => new TaskResource($task->load('subtasks')),
                 ],
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+                'error' => $e->getMessage(),
+            ], 403);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -106,6 +125,12 @@ class TaskController extends Controller
             $task->delete();
 
             return response()->json(['message' => 'Task deleted successfully!'], 200);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+                'error' => $e->getMessage(),
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
