@@ -264,9 +264,9 @@ test('I should not be able to update a board with columns that have no name, inv
         ->assertJsonValidationErrors(['columns.0.id']);
 });
 
-test('Columns not included in update are deleted', function () {
+test('Columns not included in update are deleted', function (): void {
     $board = Board::factory()->create(['user_id' => $this->user->id]);
-    
+
     $column1 = $board->columns()->create(['name' => 'Column 1']);
     $column2 = $board->columns()->create(['name' => 'Column 2']);
     $column3 = $board->columns()->create(['name' => 'Column 3']);
@@ -275,34 +275,34 @@ test('Columns not included in update are deleted', function () {
         'name' => 'Updated Board',
         'columns' => [
             ['id' => $column1->id, 'name' => 'Updated Column 1'],
-            ['name' => 'New Column']
-        ]
+            ['name' => 'New Column'],
+        ],
     ]);
 
     $this->assertDatabaseHas('columns', [
         'id' => $column1->id,
-        'name' => 'Updated Column 1'
+        'name' => 'Updated Column 1',
     ]);
-    
+
     $this->assertDatabaseHas('columns', [
         'name' => 'New Column',
-        'board_id' => $board->id
+        'board_id' => $board->id,
     ]);
-    
+
     $this->assertDatabaseMissing('columns', ['id' => $column2->id]);
     $this->assertDatabaseMissing('columns', ['id' => $column3->id]);
-    
+
     $this->assertCount(2, $board->fresh()->columns);
 });
 
-test('All columns are deleted when none are provided in update', function () {
+test('All columns are deleted when none are provided in update', function (): void {
     $board = Board::factory()->create(['user_id' => $this->user->id]);
-    
+
     $board->columns()->create(['name' => 'Column A']);
     $board->columns()->create(['name' => 'Column B']);
 
     $board->updateWithColumns([
-        'name' => 'Board without columns'
+        'name' => 'Board without columns',
     ]);
 
     $this->assertCount(0, $board->fresh()->columns);

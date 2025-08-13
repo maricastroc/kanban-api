@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\SubtaskResource;
 use App\Models\Subtask;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 
@@ -27,6 +28,11 @@ class SubtaskController extends Controller
                 'message' => 'Subtask completion toggled successfully!',
                 'data' => new SubtaskResource($subtask),
             ]);
+        } catch (AuthorizationException) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,

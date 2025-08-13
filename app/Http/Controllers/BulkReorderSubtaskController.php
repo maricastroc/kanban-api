@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Subtask;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,6 +42,11 @@ class BulkReorderSubtaskController extends Controller
                 'success' => true,
                 'message' => 'Subtasks reordered successfully.',
             ]);
+        } catch (AuthorizationException) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This action is unauthorized.',
+            ], 403);
         } catch (Exception $e) {
             DB::rollBack();
 
