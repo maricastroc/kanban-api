@@ -313,3 +313,110 @@ test('Invalid due_date should be handled gracefully', function (): void {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['due_date']);
 });
+
+test('I should be able to reorder task within same column', function () {
+    $tasks = Task::factory()->count(3)->create([
+        'column_id' => $this->column->id
+    ])->sortBy('order')->values();
+
+    $taskToMove = $tasks[0];
+    $newPosition = 2;
+
+    $response = $this->patchJson("/api/tasks/{$taskToMove->id}/reorder", [
+        'new_order' => $newPosition
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJson(['success' => true]);
+
+    $this->assertDatabaseHas('tasks', [
+        'id' => $taskToMove->id,
+        'order' => $newPosition
+    ]);
+
+    $this->assertEquals(1, $tasks[1]->fresh()->order);
+    $this->assertEquals(3, $tasks[2]->fresh()->order);
+});
+
+test('Moving task to higher position updates other tasks', function () {
+    $tasks = Task::factory()->count(3)->create([
+        'column_id' => $this->column->id
+    ])->sortBy('order')->values();
+
+    $taskToMove = $tasks[2];
+    $newPosition = 1;
+
+    $response = $this->patchJson("/api/tasks/{$taskToMove->id}/reorder", [
+        'new_order' => $newPosition
+    ]);
+
+    $response->assertStatus(200);
+
+    $this->assertDatabaseHas('tasks', [
+        'id' => $taskToMove->id,
+        'order' => $newPosition
+    ]);
+
+    $this->assertEquals(2, $tasks[0]->fresh()->order);
+    $this->assertEquals(3, $tasks[1]->fresh()->order);
+});
+
+test('I should not be able to move a task to same position does nothing', function () {
+    $task = Task::factory()->create([
+        'column_id' => $this->column->id,
+        'order' => 1
+    ]);
+
+    $response = $this->patchJson("/api/tasks/{$task->id}/reorder", [
+        'new_order' => 1
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJson(['message' => 'Task already in correct position.']);
+});
+
+test('I should not be able to reorder another user\'s task', function () {
+    $otherUser = User::factory()->create();
+    $foreignTask = Task::factory()->create([
+        'column_id' => Column::factory()->create([
+            'board_id' => Board::factory()->create(['user_id' => $otherUser->id])
+        ])
+    ]);
+
+    $response = $this->patchJson("/api/tasks/{$foreignTask->id}/reorder", [
+        'new_order' => 1
+    ]);
+
+    $response->assertStatus(403);
+});
+
+test('Subtasks not included in update are deleted', function () {
+    $task = Task::factory()->create(['column_id' => $this->column->id]);
+    
+    $subtask1 = $task->subtasks()->create(['name' => 'Subtask 1']);
+    $subtask2 = $task->subtasks()->create(['name' => 'Subtask 2']);
+    $subtask3 = $task->subtasks()->create(['name' => 'Subtask 3']);
+
+    $task->updateWithSubtasks([
+        'name' => 'Updated Task',
+        'subtasks' => [
+            ['uuid' => $subtask1->uuid, 'name' => 'Updated Subtask 1'],
+            ['name' => 'New Subtask']
+        ]
+    ]);
+
+    $this->assertDatabaseHas('subtasks', [
+        'id' => $subtask1->id,
+        'name' => 'Updated Subtask 1'
+    ]);
+    
+    $this->assertDatabaseHas('subtasks', [
+        'name' => 'New Subtask',
+        'task_id' => $task->id
+    ]);
+    
+    $this->assertDatabaseMissing('subtasks', ['id' => $subtask2->id]);
+    $this->assertDatabaseMissing('subtasks', ['id' => $subtask3->id]);
+    
+    $this->assertCount(2, $task->fresh()->subtasks);
+});
