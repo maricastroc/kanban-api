@@ -169,14 +169,32 @@ class BoardController extends Controller
     public function active(): JsonResponse
     {
         try {
-            $board = Board::getActiveBoard(Auth::id());
+            $user = Auth::user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated.',
+                ], 401);
+            }
 
-            if (! $board instanceof \App\Models\Board) {
+            $board = Board::getActiveBoard($user->id);
+
+            if (!$board instanceof \App\Models\Board) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No active boards found.',
                 ], 404);
             }
+
+            if ($board->user_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied.',
+                ], 403);
+            }
+
+            $this->authorize('view', $board);
 
             return response()->json([
                 'data' => [
