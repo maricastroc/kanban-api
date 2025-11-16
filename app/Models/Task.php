@@ -82,19 +82,23 @@ class Task extends Model
                         if ($subtask) {
                             $subtask->update([
                                 'name' => $subtaskData['name'],
-                                'is_completed' => $subtaskData['is_completed'],
-                                'order' => $subtaskData['order'],
+                                'is_completed' => $subtaskData['is_completed'] ?? false,
+                                'order' => $subtaskData['order'] ?? $subtask->order,
                             ]);
                             $updatedSubtaskIds[] = $subtask->id;
                         } else {
                             $newSubtask = $this->subtasks()->create([
                                 'name' => $subtaskData['name'],
+                                'is_completed' => $subtaskData['is_completed'] ?? false,
+                                'order' => $subtaskData['order'] ?? 0,
                             ]);
                             $updatedSubtaskIds[] = $newSubtask->id;
                         }
                     } else {
                         $newSubtask = $this->subtasks()->create([
                             'name' => $subtaskData['name'],
+                            'is_completed' => $subtaskData['is_completed'] ?? false,
+                            'order' => $subtaskData['order'] ?? 0,
                         ]);
                         $updatedSubtaskIds[] = $newSubtask->id;
                     }
