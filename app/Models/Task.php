@@ -77,23 +77,23 @@ class Task extends Model
                 $updatedSubtaskIds = [];
 
                 foreach ($data['subtasks'] as $subtaskData) {
-                    if (isset($subtaskData['uuid'])) {
+                    $subtask = null;
+                    
+                    if (isset($subtaskData['id'])) {
+                        $subtask = $this->subtasks()->where('id', $subtaskData['id'])->first();
+                    } 
+                    
+                    if (!$subtask && isset($subtaskData['uuid'])) {
                         $subtask = $this->subtasks()->where('uuid', $subtaskData['uuid'])->first();
-                        if ($subtask) {
-                            $subtask->update([
-                                'name' => $subtaskData['name'],
-                                'is_completed' => $subtaskData['is_completed'] ?? false,
-                                'order' => $subtaskData['order'] ?? $subtask->order,
-                            ]);
-                            $updatedSubtaskIds[] = $subtask->id;
-                        } else {
-                            $newSubtask = $this->subtasks()->create([
-                                'name' => $subtaskData['name'],
-                                'is_completed' => $subtaskData['is_completed'] ?? false,
-                                'order' => $subtaskData['order'] ?? 0,
-                            ]);
-                            $updatedSubtaskIds[] = $newSubtask->id;
-                        }
+                    }
+
+                    if ($subtask) {
+                        $subtask->update([
+                            'name' => $subtaskData['name'] ?? $subtask->name,
+                            'is_completed' => $subtaskData['is_completed'] ?? $subtask->is_completed,
+                            'order' => $subtaskData['order'] ?? $subtask->order,
+                        ]);
+                        $updatedSubtaskIds[] = $subtask->id;
                     } else {
                         $newSubtask = $this->subtasks()->create([
                             'name' => $subtaskData['name'],
@@ -106,11 +106,9 @@ class Task extends Model
 
                 $subtasksToDelete = array_diff($existingSubtaskIds, $updatedSubtaskIds);
 
-                if ($subtasksToDelete !== []) {
+                if (!empty($subtasksToDelete)) {
                     $this->subtasks()->whereIn('id', $subtasksToDelete)->delete();
                 }
-            } else {
-                $this->subtasks()->delete();
             }
 
             if (isset($data['tags']) && is_array($data['tags'])) {
@@ -119,7 +117,7 @@ class Task extends Model
 
             DB::commit();
 
-            return $this;
+            return $this->fresh(['subtasks', 'tags']);
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
