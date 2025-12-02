@@ -180,11 +180,13 @@ class BoardController extends Controller
 
             $board = Board::getActiveBoard($user->id);
 
-            if (!$board instanceof \App\Models\Board) {
+            if (!$board) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'No active boards found.',
-                ], 404);
+                    'success' => true,
+                    'data' => [
+                        'board' => null,
+                    ],
+                ], 200);
             }
 
             if ($board->user_id !== $user->id) {
