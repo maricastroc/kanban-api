@@ -37,7 +37,7 @@ This backend project was a great opportunity to strengthen my understanding of:
 
 ## 🔍 Links
 This API is used by the frontend application available at:
-[Deploy](https://kanban-app-maricastroc.vercel.app/)
+[Deploy](https://kanban.marianacastro.dev)
 
 ## ℹ️ How to run the application?
 
