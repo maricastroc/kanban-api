@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class AuthController extends Controller
 {
@@ -21,15 +22,17 @@ class AuthController extends Controller
                 'password' => $register->password,
             ]);
 
+            $token = $user->createToken('auth_token')->plainTextToken;
+
             return response()->json([
                 'message' => 'User registered successfully!',
-                'token' => $user->createToken('auth_token')->plainTextToken,
+                'token' => $token,
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                 ],
-            ], 201);
+            ], 201)->cookie($this->authCookie($token));
 
         } catch (\Exception $e) {
             return response()->json([
@@ -52,9 +55,16 @@ class AuthController extends Controller
 
             $user->tokens()->delete();
 
+            $token = $user->createToken('auth_token')->plainTextToken;
+
             return response()->json([
-                'token' => $user->createToken('auth_token')->plainTextToken,
-            ], 200);
+                'token' => $token,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ],
+            ], 200)->cookie($this->authCookie($token));
 
         } catch (ValidationException $e) {
             return response()->json([
@@ -68,26 +78,51 @@ class AuthController extends Controller
         }
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
         if ($user) {
-            /** @var PersonalAccessToken|null $token */
+            /** @var \Laravel\Sanctum\PersonalAccessToken|null $token */
             $token = $user->currentAccessToken();
 
             if ($token) {
                 $token->delete();
-
-                return response()->json([
-                    'message' => 'Logout successful!',
-                ]);
             }
         }
 
         return response()->json([
-            'message' => 'User not authenticated',
-        ], 401);
+            'message' => 'Logout successful!',
+        ])->cookie($this->forgetAuthCookie());
+    }
+
+    /**
+     * Builds the httpOnly cookie that carries the Sanctum token. Kept out of
+     * JavaScript's reach (mitigates token theft via XSS) and promoted back to a
+     * Bearer header by App\Http\Middleware\AuthenticateWithCookie.
+     */
+    private function authCookie(string $token): Cookie
+    {
+        return cookie(
+            name: 'auth_token',
+            value: $token,
+            minutes: 60 * 24 * 7, // 1 week
+            path: config('session.path', '/'),
+            domain: config('session.domain'),
+            secure: (bool) (config('session.secure') ?? app()->isProduction()),
+            httpOnly: true,
+            raw: false,
+            sameSite: config('session.same_site', 'lax'),
+        );
+    }
+
+    private function forgetAuthCookie(): Cookie
+    {
+        return cookie()->forget(
+            'auth_token',
+            config('session.path', '/'),
+            config('session.domain'),
+        );
     }
 }

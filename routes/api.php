@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
-    Route::get('/user', fn (Request $request) => $request->user());
+    Route::get('/user', fn (Request $request) => ['user' => $request->user()]);
 
     Route::get('/boards/active', [BoardController::class, 'active']);
 
