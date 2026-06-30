@@ -164,11 +164,13 @@ test('I should be able to set a boards as active', function (): void {
     expect($board1->is_active)->toBeFalse();
 });
 
-test('Active board returns 404 when none active', function (): void {
+test('Active board returns null when none active', function (): void {
     $this->actingAs($this->user);
 
     $response = $this->getJson('/api/boards/active');
-    $response->assertStatus(404);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.board', null);
 });
 
 test('Board list can load columns and user', function (): void {

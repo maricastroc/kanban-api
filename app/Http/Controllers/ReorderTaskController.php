@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,9 +33,7 @@ class ReorderTaskController extends Controller
             ]);
         }
 
-        try {
-            DB::beginTransaction();
-
+        DB::transaction(function () use ($task, $columnId, $currentOrder, $newOrder): void {
             if ($newOrder < $currentOrder) {
                 Task::where('column_id', $columnId)
                     ->whereBetween('order', [$newOrder, $currentOrder - 1])
@@ -48,22 +45,12 @@ class ReorderTaskController extends Controller
             }
 
             $task->update(['order' => $newOrder]);
+        });
 
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Task reordered successfully!',
-                'data' => $task,
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to reorder task.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Task reordered successfully!',
+            'data' => $task,
+        ]);
     }
 }

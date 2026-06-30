@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Column;
 use App\Models\Task;
-use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +27,14 @@ class MoveTaskController extends Controller
         $newColumnId = $validated['new_column_id'];
         $newOrder = (int) $validated['new_order'];
 
+        $targetColumn = Column::findOrFail($newColumnId);
+
+        // a task can only move within its own board (the task is already
+        // authorized as the user's, so this also blocks cross-tenant moves)
+        if ($targetColumn->board_id !== $task->column->board_id) {
+            abort(403, 'Cannot move a task to a column outside its board.');
+        }
+
         $currentColumnId = $task->column_id;
         $currentOrder = $task->order;
 
@@ -39,9 +46,7 @@ class MoveTaskController extends Controller
             ]);
         }
 
-        try {
-            DB::beginTransaction();
-
+        DB::transaction(function () use ($task, $currentColumnId, $currentOrder, $newColumnId, $newOrder, $targetColumn): void {
             Task::where('column_id', $currentColumnId)
                 ->where('order', '>', $currentOrder)
                 ->decrement('order');
@@ -53,24 +58,14 @@ class MoveTaskController extends Controller
             $task->update([
                 'column_id' => $newColumnId,
                 'order' => $newOrder,
-                'status' => Column::findOrFail($newColumnId)->name,
+                'status' => $targetColumn->name,
             ]);
+        });
 
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Task moved successfully!',
-                'data' => $task,
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to move task.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Task moved successfully!',
+            'data' => $task,
+        ]);
     }
 }

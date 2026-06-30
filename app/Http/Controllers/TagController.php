@@ -9,8 +9,6 @@ use App\Http\Requests\UpdateTagRequest;
 use App\Http\Resources\TagResource;
 use App\Models\Tag;
 use App\Models\Task;
-use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,171 +20,99 @@ class TagController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        try {
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-            $this->authorize('viewAny', Tag::class);
+        $this->authorize('viewAny', Tag::class);
 
-            $tags = $user->tags()->get();
+        $tags = $user->tags()->get();
 
-            return response()->json([
-                'data' => [
-                    'tags' => TagResource::collection($tags),
-                ],
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch tags',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'data' => [
+                'tags' => TagResource::collection($tags),
+            ],
+        ], 200);
     }
 
     public function store(StoreTagRequest $request): JsonResponse
     {
-        try {
-            $this->authorize('create', Tag::class);
+        $this->authorize('create', Tag::class);
 
-            $user = Auth::user();
+        $user = Auth::user();
 
-            $tag = Tag::create([
-                ...$request->validated(),
-                'user_id' => $user->id,
-            ]);
+        $tag = Tag::create([
+            ...$request->validated(),
+            'user_id' => $user->id,
+        ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Tag created successfully!',
-                'data' => new TagResource($tag),
-            ], 201);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create tag',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Tag created successfully!',
+            'data' => new TagResource($tag),
+        ], 201);
     }
 
     public function attachToTask(Request $request, Task $task, Tag $tag): JsonResponse
     {
-        try {
-            $this->authorize('attachTag', [$task, $tag]);
+        $this->authorize('attachTag', [$task, $tag]);
 
-            if ($task->tags()->where('tag_id', $tag->id)->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tag is already linked to the task',
-                ], 409);
-            }
-
-            $task->tags()->attach($tag->id);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Tag attached to task successfully',
-                'data' => new TagResource($tag),
-            ]);
-
-        } catch (AuthorizationException) {
+        if ($task->tags()->where('tag_id', $tag->id)->exists()) {
             return response()->json([
                 'success' => false,
-                'message' => 'This action is unauthorized.',
-            ], 403);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to attach tag to task',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => 'Tag is already linked to the task',
+            ], 409);
         }
+
+        $task->tags()->attach($tag->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tag attached to task successfully',
+            'data' => new TagResource($tag),
+        ]);
     }
 
     public function detachFromTask(Request $request, Task $task, Tag $tag): JsonResponse
     {
-        try {
-            $this->authorize('detachTag', [$task, $tag]);
+        $this->authorize('detachTag', [$task, $tag]);
 
-            if (! $task->tags()->where('tag_id', $tag->id)->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tag is already unlinked from the task',
-                ], 409);
-            }
-
-            $task->tags()->detach($tag->id);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Tag detached from task successfully!',
-            ]);
-        } catch (AuthorizationException $e) {
+        if (! $task->tags()->where('tag_id', $tag->id)->exists()) {
             return response()->json([
                 'success' => false,
-                'message' => 'This action is unauthorized.',
-                'error' => $e->getMessage(),
-            ], 403);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to detach tag from task',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => 'Tag is already unlinked from the task',
+            ], 409);
         }
+
+        $task->tags()->detach($tag->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tag detached from task successfully!',
+        ]);
     }
 
     public function update(UpdateTagRequest $request, Tag $tag): JsonResponse
     {
-        try {
-            $this->authorize('update', $tag);
+        $this->authorize('update', $tag);
 
-            $tag->update($request->validated());
+        $tag->update($request->validated());
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Tag updated successfully!',
-                'data' => new TagResource($tag),
-            ]);
-        } catch (AuthorizationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This action is unauthorized.',
-                'error' => $e->getMessage(),
-            ], 403);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update tag',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Tag updated successfully!',
+            'data' => new TagResource($tag),
+        ]);
     }
 
     public function destroy(Tag $tag): JsonResponse
     {
-        try {
-            $this->authorize('delete', $tag);
+        $this->authorize('delete', $tag);
 
-            $tag->delete();
+        $tag->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Tag deleted successfully!',
-            ]);
-        } catch (AuthorizationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This action is unauthorized.',
-                'error' => $e->getMessage(),
-            ], 403);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete tag',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Tag deleted successfully!',
+        ]);
     }
 }

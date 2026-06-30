@@ -79,10 +79,8 @@ test('I should not be able to login with invalid credentials', function (): void
     ]);
 
     $response->assertStatus(422)
-        ->assertJson([
-            'message' => [
-                'email' => ['The provided credentials are incorrect.'],
-            ],
+        ->assertJsonValidationErrors([
+            'email' => 'The provided credentials are incorrect.',
         ]);
 
     $response = $this->postJson('/api/login', [
@@ -91,9 +89,7 @@ test('I should not be able to login with invalid credentials', function (): void
     ]);
 
     $response->assertStatus(422)
-        ->assertJson([
-            'message' => [
-                'email' => ['The provided credentials are incorrect.'],
-            ],
+        ->assertJsonValidationErrors([
+            'email' => 'The provided credentials are incorrect.',
         ]);
 });

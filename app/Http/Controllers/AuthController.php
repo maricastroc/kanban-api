@@ -13,69 +13,49 @@ use Symfony\Component\HttpFoundation\Cookie;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $register)
+    public function register(RegisterRequest $register): JsonResponse
     {
-        try {
-            $user = User::create([
-                'name' => $register->name,
-                'email' => $register->email,
-                'password' => $register->password,
-            ]);
+        $user = User::create([
+            'name' => $register->name,
+            'email' => $register->email,
+            'password' => $register->password,
+        ]);
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
-                'message' => 'User registered successfully!',
-                'token' => $token,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ],
-            ], 201)->cookie($this->authCookie($token));
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred during registration.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'message' => 'User registered successfully!',
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+        ], 201)->cookie($this->authCookie($token));
     }
 
     public function login(LoginRequest $r): JsonResponse
     {
-        try {
-            $user = User::firstWhere('email', $r->string('email'));
+        $user = User::firstWhere('email', $r->string('email'));
 
-            if (! $user || ! Hash::check($r->string('password'), $user->password)) {
-                throw ValidationException::withMessages([
-                    'email' => ['The provided credentials are incorrect.'],
-                ]);
-            }
-
-            $user->tokens()->delete();
-
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return response()->json([
-                'token' => $token,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ],
-            ], 200)->cookie($this->authCookie($token));
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => $e->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'An unexpected error occurred. Please try again later.',
-                'details' => $e->getMessage(),
-            ], 500);
+        if (! $user || ! Hash::check($r->string('password'), $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
         }
+
+        $user->tokens()->delete();
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+        ], 200)->cookie($this->authCookie($token));
     }
 
     public function logout(): JsonResponse
