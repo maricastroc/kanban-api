@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Board;
+use App\Models\Tag;
 use App\Models\User;
 use App\Support\DemoWorkspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -147,4 +148,22 @@ test('demo login sets a httpOnly auth cookie', function (): void {
 
     expect($cookie)->not->toBeNull();
     expect($cookie->isHttpOnly())->toBeTrue();
+});
+
+test('the demo workspace is richly seeded for the portfolio', function (): void {
+    $this->postJson('/api/demo-login')->assertStatus(200);
+
+    $user = User::firstWhere('email', DemoWorkspace::EMAIL);
+
+    expect(Tag::where('user_id', $user->id)->count())->toBe(8);
+
+    $board = Board::where('user_id', $user->id)
+        ->where('name', 'Platform Launch')
+        ->first();
+
+    // Every column carries at least five tasks so the demo board looks full.
+    expect($board->columns)->toHaveCount(5);
+    $board->columns->each(
+        fn ($column) => expect($column->tasks->count())->toBeGreaterThanOrEqual(5)
+    );
 });
