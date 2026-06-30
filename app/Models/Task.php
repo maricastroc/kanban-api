@@ -15,10 +15,11 @@ class Task extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $fillable = ['name', 'description', 'order', 'column_id', 'due_date', 'uuid'];
+    protected $fillable = ['name', 'description', 'order', 'column_id', 'due_date', 'uuid', 'is_completed'];
 
     protected $casts = [
         'due_date' => 'datetime',
+        'is_completed' => 'boolean',
     ];
 
     #[\Override]

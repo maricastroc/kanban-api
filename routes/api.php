@@ -9,6 +9,7 @@ use App\Http\Controllers\ReorderTaskController;
 use App\Http\Controllers\SubtaskController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ToggleTaskCompletionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,8 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
     Route::patch('/tasks/{task}/reorder', [ReorderTaskController::class, '__invoke']);
 
     Route::patch('/tasks/{task}/move', [MoveTaskController::class, '__invoke']);
+
+    Route::patch('/tasks/{task}/toggle-completion', ToggleTaskCompletionController::class);
 
     Route::patch('/columns/{column}/reorder', ReorderColumnController::class);
 

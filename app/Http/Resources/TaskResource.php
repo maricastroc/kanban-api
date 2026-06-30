@@ -26,6 +26,7 @@ class TaskResource extends JsonResource
             'description' => $this->description,
             'order' => $this->order,
             'due_date' => $this->due_date,
+            'is_completed' => (bool) $this->is_completed,
             'subtasks' => SubtaskResource::collection($this->whenLoaded('subtasks')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
         ];
