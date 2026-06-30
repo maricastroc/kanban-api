@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use App\Support\DemoWorkspace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -44,6 +45,31 @@ class AuthController extends Controller
             ]);
         }
 
+        $user->tokens()->delete();
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+        ], 200)->cookie($this->authCookie($token));
+    }
+
+    /**
+     * Signs the visitor into the shared demo account, rebuilding its sample
+     * workspace first so every entry starts from a clean, populated slate.
+     */
+    public function demoLogin(): JsonResponse
+    {
+        $user = DemoWorkspace::provision();
+
+        // Shared account: clearing old tokens keeps personal_access_tokens from
+        // growing without bound. A concurrent demo session would be signed out,
+        // which is acceptable since the workspace is reseeded on every entry.
         $user->tokens()->delete();
 
         $token = $user->createToken('auth_token')->plainTextToken;

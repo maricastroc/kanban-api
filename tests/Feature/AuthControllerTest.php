@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Board;
 use App\Models\User;
+use App\Support\DemoWorkspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 
@@ -92,4 +94,57 @@ test('I should not be able to login with invalid credentials', function (): void
         ->assertJsonValidationErrors([
             'email' => 'The provided credentials are incorrect.',
         ]);
+});
+
+test('I should be able to enter the demo workspace', function (): void {
+    $response = $this->postJson('/api/demo-login');
+
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'token',
+            'user' => ['id', 'name', 'email'],
+        ]);
+
+    $this->assertDatabaseHas('users', ['email' => DemoWorkspace::EMAIL]);
+
+    $user = User::firstWhere('email', DemoWorkspace::EMAIL);
+
+    // The sample workspace was seeded with exactly one active board.
+    expect(Board::where('user_id', $user->id)->count())->toBeGreaterThan(1);
+    expect(Board::where('user_id', $user->id)->where('is_active', true)->count())->toBe(1);
+    $this->assertDatabaseHas('boards', [
+        'user_id' => $user->id,
+        'name' => 'Platform Launch',
+    ]);
+});
+
+test('demo login reseeds the workspace on every entry', function (): void {
+    $this->postJson('/api/demo-login')->assertStatus(200);
+
+    $user = User::firstWhere('email', DemoWorkspace::EMAIL);
+    $seededBoards = Board::where('user_id', $user->id)->count();
+
+    // Simulate a previous visitor wiping and vandalising the shared workspace.
+    Board::where('user_id', $user->id)->delete();
+    Board::create([
+        'name' => 'Vandalised board',
+        'user_id' => $user->id,
+        'is_active' => true,
+    ]);
+
+    $this->postJson('/api/demo-login')->assertStatus(200);
+
+    expect(Board::where('user_id', $user->id)->count())->toBe($seededBoards);
+    expect(Board::where('user_id', $user->id)->where('name', 'Vandalised board')->exists())
+        ->toBeFalse();
+});
+
+test('demo login sets a httpOnly auth cookie', function (): void {
+    $response = $this->postJson('/api/demo-login');
+
+    $cookie = collect($response->headers->getCookies())
+        ->first(fn ($cookie): bool => $cookie->getName() === 'auth_token');
+
+    expect($cookie)->not->toBeNull();
+    expect($cookie->isHttpOnly())->toBeTrue();
 });

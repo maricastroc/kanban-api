@@ -95,16 +95,24 @@ class Board extends Model
         $existingColumnIds = $this->columns()->pluck('id')->toArray();
         $updatedColumnIds = [];
 
-        foreach ($columnsData as $columnData) {
+        // The incoming array order is the source of truth for column ordering,
+        // so persist a 1-based `order` from each column's position. (No unique
+        // index on `order`, so reassigning sequentially is collision-free.)
+        foreach (array_values($columnsData) as $index => $columnData) {
+            $order = $index + 1;
+
             if (isset($columnData['id'])) {
                 $column = $this->columns()->find($columnData['id']);
 
                 if ($column) {
-                    $column->update(['name' => $columnData['name']]);
+                    $column->update(['name' => $columnData['name'], 'order' => $order]);
                     $updatedColumnIds[] = $column->id;
                 }
             } else {
-                $newColumn = $this->columns()->create(['name' => $columnData['name']]);
+                $newColumn = $this->columns()->create([
+                    'name' => $columnData['name'],
+                    'order' => $order,
+                ]);
                 $updatedColumnIds[] = $newColumn->id;
             }
         }

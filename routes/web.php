@@ -11,4 +11,6 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/api/register', [AuthController::class, 'register']);
 
     Route::post('/api/login', [AuthController::class, 'login']);
+
+    Route::post('/api/demo-login', [AuthController::class, 'demoLogin']);
 });
