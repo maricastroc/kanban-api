@@ -55,11 +55,13 @@ final class DemoWorkspace
 
             $blueprint = self::blueprint();
 
+            // The frontend resolves a tag's colour by *name* (see getTagHex), so
+            // the stored colour must be a palette name, not a hex value.
             $tagIds = [];
-            foreach ($blueprint['tags'] as $name => $color) {
+            foreach ($blueprint['tags'] as $name => $colorName) {
                 $tagIds[$name] = Tag::create([
                     'name' => $name,
-                    'color' => $color,
+                    'color' => $colorName,
                     'user_id' => $user->id,
                 ])->id;
             }
@@ -80,6 +82,7 @@ final class DemoWorkspace
                         $task = $column->tasks()->create([
                             'name' => $taskData['name'],
                             'description' => $taskData['description'] ?? null,
+                            'is_completed' => $taskData['completed'] ?? false,
                             'due_date' => isset($taskData['due'])
                                 ? now()->addDays($taskData['due'])
                                 : null,
@@ -109,11 +112,13 @@ final class DemoWorkspace
 
     /**
      * The sample data. Kept intentionally rich so the demo shows off the app:
-     * multiple boards, overdue / upcoming / no due dates, partially completed
-     * subtasks and colour-coded tags.
+     * several columns, a healthy mix of overdue / due-soon / future / done
+     * dates, partially completed subtasks and colour-coded tags.
      *
      * `due` is a day offset from now (negative = overdue); omit it for no date.
-     * Each subtask is a [name, isCompleted] pair.
+     * `completed` marks the whole task done. Each subtask is a [name, isDone]
+     * pair. Tag colours are palette *names* (see App\Models — resolved by the
+     * frontend's getTagHex), not hex values.
      *
      * @return array{tags: array<string, string>, boards: array<int, array<string, mixed>>}
      */
@@ -121,18 +126,35 @@ final class DemoWorkspace
     {
         return [
             'tags' => [
-                'Design' => '#49C4E5',
-                'Feature' => '#8471F2',
-                'Bug' => '#EA5555',
-                'Research' => '#20C997',
-                'DevOps' => '#F2B84B',
-                'Docs' => '#6C8CFF',
+                'Design' => 'Aqua Blue',
+                'Feature' => 'Lavender',
+                'Bug' => 'Vivid Red',
+                'Research' => 'Mint Green',
+                'DevOps' => 'Golden Yellow',
+                'Docs' => 'Blue',
             ],
             'boards' => [
                 [
                     'name' => 'Platform Launch',
                     'active' => true,
                     'columns' => [
+                        [
+                            'name' => 'Backlog',
+                            'tasks' => [
+                                [
+                                    'name' => 'Research transactional email providers',
+                                    'description' => 'Compare Resend, Postmark and Brevo for deliverability and price.',
+                                    'due' => -3,
+                                    'tags' => ['Research'],
+                                ],
+                                [
+                                    'name' => 'Explore an activity log',
+                                    'description' => 'A per-board feed of recent changes.',
+                                    'due' => 25,
+                                    'tags' => ['Feature'],
+                                ],
+                            ],
+                        ],
                         [
                             'name' => 'Todo',
                             'tasks' => [
@@ -158,21 +180,15 @@ final class DemoWorkspace
                                         ['Empty state', false],
                                     ],
                                 ],
-                                [
-                                    'name' => 'Research transactional email providers',
-                                    'description' => 'Compare Resend, Postmark and Brevo for deliverability and price.',
-                                    'due' => -3,
-                                    'tags' => ['Research'],
-                                ],
                             ],
                         ],
                         [
-                            'name' => 'Doing',
+                            'name' => 'In Progress',
                             'tasks' => [
                                 [
                                     'name' => 'Build the onboarding flow',
                                     'description' => 'First-run experience backed by a seeded sample board.',
-                                    'due' => 2,
+                                    'due' => 1,
                                     'tags' => ['Feature'],
                                     'subtasks' => [
                                         ['Welcome screen', true],
@@ -183,10 +199,26 @@ final class DemoWorkspace
                                 [
                                     'name' => 'Fix drag-and-drop offset on Safari',
                                     'description' => 'Cards land one slot below the drop target.',
+                                    'due' => 0,
                                     'tags' => ['Bug'],
                                     'subtasks' => [
                                         ['Reproduce on Safari', true],
                                         ['Patch sensor activation', false],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        [
+                            'name' => 'In Review',
+                            'tasks' => [
+                                [
+                                    'name' => 'Add real-time updates with WebSocket',
+                                    'description' => 'Live board sync so collaborators see moves instantly.',
+                                    'due' => 4,
+                                    'tags' => ['Feature'],
+                                    'subtasks' => [
+                                        ['Socket server', true],
+                                        ['Reconnect logic', false],
                                     ],
                                 ],
                             ],
@@ -197,6 +229,8 @@ final class DemoWorkspace
                                 [
                                     'name' => 'Migrate auth to httpOnly cookies',
                                     'description' => 'Move the Sanctum token out of localStorage to mitigate XSS.',
+                                    'due' => -10,
+                                    'completed' => true,
                                     'tags' => ['Feature'],
                                     'subtasks' => [
                                         ['Set the cookie on login', true],
@@ -207,6 +241,8 @@ final class DemoWorkspace
                                 [
                                     'name' => 'Set up the CI pipeline',
                                     'description' => 'Lint, test and build on every pull request.',
+                                    'due' => -5,
+                                    'completed' => true,
                                     'tags' => ['DevOps'],
                                     'subtasks' => [
                                         ['Lint step', true],
@@ -223,7 +259,7 @@ final class DemoWorkspace
                     'active' => false,
                     'columns' => [
                         [
-                            'name' => 'Backlog',
+                            'name' => 'Ideas',
                             'tasks' => [
                                 [
                                     'name' => 'Write the launch blog post',
@@ -257,6 +293,8 @@ final class DemoWorkspace
                             'tasks' => [
                                 [
                                     'name' => 'Reserve the domain',
+                                    'due' => -14,
+                                    'completed' => true,
                                     'tags' => ['DevOps'],
                                     'subtasks' => [
                                         ['Buy the domain', true],
