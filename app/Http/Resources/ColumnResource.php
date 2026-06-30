@@ -21,6 +21,7 @@ class ColumnResource extends JsonResource
             'id' => $this->id,
             'uuid' => $this->uuid,
             'name' => $this->name,
+            'order' => $this->order,
             'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
         ];
     }

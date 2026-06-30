@@ -144,6 +144,6 @@ class Board extends Model
 
     public function columns(): HasMany
     {
-        return $this->hasMany(Column::class)->with('tasks.subtasks');
+        return $this->hasMany(Column::class)->orderBy('order')->with('tasks.subtasks');
     }
 }

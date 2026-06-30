@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\BulkReorderSubtaskController;
 use App\Http\Controllers\MoveTaskController;
+use App\Http\Controllers\ReorderColumnController;
 use App\Http\Controllers\ReorderTaskController;
 use App\Http\Controllers\SubtaskController;
 use App\Http\Controllers\TagController;
@@ -35,6 +36,8 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
     Route::patch('/tasks/{task}/reorder', [ReorderTaskController::class, '__invoke']);
 
     Route::patch('/tasks/{task}/move', [MoveTaskController::class, '__invoke']);
+
+    Route::patch('/columns/{column}/reorder', ReorderColumnController::class);
 
     Route::apiResource('/tags', TagController::class)->only(['index', 'store', 'update', 'destroy']);
 
