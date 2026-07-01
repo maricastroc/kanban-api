@@ -1,5 +1,4 @@
 # Cadence API
-![image](https://github.com/user-attachments/assets/6876f831-7719-4f52-bf24-3e84eb236bea)
 
 ## 📚 Project Description
 
@@ -15,6 +14,22 @@ RESTful API for the fullstack Cadence app, built with Laravel. This backend mana
 - Token-based authentication using Laravel Sanctum
 - Search, pagination, and filters for better performance
 - Feature tests with PHPUnit
+
+## 🖼️ Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="62%"><strong>Desktop</strong></td>
+    <td align="center" width="38%"><strong>Mobile</strong></td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/screenshots/home-desktop.png" alt="Home — Desktop" /></td>
+    <td rowspan="2" valign="top"><img src="docs/screenshots/task-mobile.png" alt="Library — Mobile" /></td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/screenshots/home-desktop-light.png" alt="Explore — Desktop" /></td>
+  </tr>
+</table>
 
 ## 📌 What did I learn?
 
