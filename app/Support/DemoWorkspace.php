@@ -20,7 +20,7 @@ use Illuminate\Support\Str;
  */
 final class DemoWorkspace
 {
-    public const EMAIL = 'demo@kanban.app';
+    public const EMAIL = 'demo@cadence.app';
 
     public const NAME = 'Demo User';
 

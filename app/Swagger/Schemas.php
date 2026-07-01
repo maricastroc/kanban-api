@@ -10,6 +10,16 @@ namespace App\Swagger;
  *     name="X-XSRF-TOKEN"
  * )
  *
+ * @OA\Server(
+ *     url=L5_SWAGGER_CONST_HOST,
+ *     description="Produção"
+ * )
+ *
+ * @OA\Server(
+ *     url="http://localhost:8000",
+ *     description="Local"
+ * )
+ *
  * @OA\Info(
  *     title="Cadence API",
  *     version="1.0.0",

@@ -144,4 +144,5 @@ class BulkReorderSubtasks
      *     )
      * )
      */
+    public function __invoke(): void {}
 }

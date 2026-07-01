@@ -22,13 +22,11 @@ Route::name('api.')->middleware('auth:sanctum')->group(function (): void {
 
     Route::apiResource('boards', BoardController::class);
 
-    Route::apiResource('tasks', TaskController::class);
+    Route::apiResource('tasks', TaskController::class)->except(['show']);
 
     Route::post('/tasks/{task}/tags/{tag}', [TagController::class, 'attachToTask'])->name('tasks.tags.attach');
 
     Route::delete('/tasks/{task}/tags/{tag}', [TagController::class, 'detachFromTask'])->name('tasks.tags.detach');
-
-    Route::apiResource('tags', TagController::class);
 
     Route::patch('/subtasks/{subtask}/toggle-completion', [SubtaskController::class, 'toggleCompletion']);
 

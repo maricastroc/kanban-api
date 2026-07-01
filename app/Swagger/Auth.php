@@ -109,6 +109,36 @@ class Auth
 
     /**
      * @OA\Post(
+     *     path="/api/demo-login",
+     *     summary="Signs into the shared demo account",
+     *     description="Reseeds the demo workspace to a clean, populated state and returns a Sanctum token for the shared demo user. No request body required.",
+     *     tags={"Authentication"},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Demo login successful!",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(property="token", type="string", example="1|Xn9r5..."),
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Demo User"),
+     *                 @OA\Property(property="email", type="string", example="demo@example.com")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function demoLogin(): void
+    {
+        //
+    }
+
+    /**
+     * @OA\Get(
      *     path="/api/logout",
      *     summary="Revokes the current access token",
      *     tags={"Authentication"},
@@ -136,6 +166,42 @@ class Auth
      * )
      */
     public function logout(): void
+    {
+        //
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/user",
+     *     summary="Returns the currently authenticated user",
+     *     tags={"Authentication"},
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Authenticated user",
+     *
+     *         @OA\JsonContent(
+     *
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Jon Doe"),
+     *                 @OA\Property(property="email", type="string", example="jon@example.com")
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
+    public function user(): void
     {
         //
     }

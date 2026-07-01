@@ -71,7 +71,7 @@ class ReorderTask
      *
      *     @OA\Response(
      *         response=401,
-     *         description=""Unauthenticated",
+     *         description="Unauthenticated",
      *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     ),
@@ -123,4 +123,5 @@ class ReorderTask
      *     )
      * )
      */
+    public function __invoke(): void {}
 }

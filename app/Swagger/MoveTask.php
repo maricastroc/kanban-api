@@ -119,4 +119,5 @@ class MoveTask
      *     )
      * )
      */
+    public function __invoke(): void {}
 }
