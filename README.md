@@ -3,7 +3,7 @@
 
 ## 📚 Project Description
 
-RESTful API for the fullstack Cadence app, built with Laravel. This backend manages users, boards, columns, tasks, subtasks and tags. It uses a PostgreSQL database and provides secure access via token-based authentication.
+RESTful API for the fullstack Cadence app, built with Laravel. This backend manages users, boards, columns, tasks, subtasks, and tags. It uses a PostgreSQL database and provides secure access via token-based authentication.
 
 ## 📦 Features
 
