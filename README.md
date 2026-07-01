@@ -44,8 +44,8 @@ This API is used by the frontend application available at:
 > Clone the repository:
 
 ```bash
-git clone https://github.com/maricastroc/kanban-api.git
-cd kanban-api
+git clone https://github.com/maricastroc/cadence-api.git
+cd cadence-api
 ```
 
 > Install the dependencies:

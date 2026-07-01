@@ -11,9 +11,9 @@ namespace App\Swagger;
  * )
  *
  * @OA\Info(
- *     title="Kanban API",
+ *     title="Cadence API",
  *     version="1.0.0",
- *     description="Backend API for Kanban App — RESTful service managing users, boards, tasks, and authentication for daily task management."
+ *     description="Backend API for Cadence App — RESTful service managing users, boards, tasks, and authentication for daily task management."
  * )
  *
  * @OA\Schema(

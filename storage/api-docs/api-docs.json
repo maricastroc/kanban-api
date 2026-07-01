@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Kanban API",
-        "description": "Backend API for Kanban App — RESTful service managing users, boards, tasks, and authentication for daily task management.",
+        "title": "Cadence API",
+        "description": "Backend API for Cadence App — RESTful service managing users, boards, tasks, and authentication for daily task management.",
         "version": "1.0.0"
     },
     "paths": {
