@@ -1,9 +1,9 @@
-# Kanban Task Management API
+# Cadence API
 ![image](https://github.com/user-attachments/assets/6876f831-7719-4f52-bf24-3e84eb236bea)
 
 ## 📚 Project Description
 
-RESTful API for the fullstack Kanban app, built with Laravel. This backend manages users, boards, columns, tasks, subtasks, and tags. It uses a PostgreSQL database and provides secure access via token-based authentication.
+RESTful API for the fullstack Cadence app, built with Laravel. This backend manages users, boards, columns, tasks, subtasks, and tags. It uses a PostgreSQL database and provides secure access via token-based authentication.
 
 ## 📦 Features
 
@@ -37,7 +37,7 @@ This backend project was a great opportunity to strengthen my understanding of:
 
 ## 🔍 Links
 This API is used by the frontend application available at:
-[Deploy](https://kanban.marianacastro.dev)
+[Deploy](https://cadence.marianacastro.dev)
 
 ## ℹ️ How to run the application?
 
