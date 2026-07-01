@@ -35,6 +35,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             \App\Http\Middleware\AuthenticateWithCookie::class,
         ]);
+
+        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Single place that turns exceptions into JSON for API requests. The
